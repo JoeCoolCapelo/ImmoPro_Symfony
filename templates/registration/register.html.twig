@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - {{ global_settings.agency_name|default('ImmoPro') }}</title>
+    <meta name="description" content="Créez votre compte sur ImmoPro Premium">
+
+    {# Fonts #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+
+    {# Icons #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    {# Tailwind CDN #}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0F172A',
+                        premium: '#4F46E5',
+                        gold: '#D4AF37',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { font-weight: 600; }
+        body { font-family: 'Inter', sans-serif; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 3rem;
+            background: rgba(15, 23, 42, 0.05);
+            border: 1.5px solid #E2E8F0;
+            border-radius: 0.875rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #0F172A;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            border-color: #4F46E5;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+        }
+        .input-field::placeholder { color: #94A3B8; font-weight: 500; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in { animation: slideIn 0.5s ease forwards; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.4s ease forwards; }
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+        .delay-5 { animation-delay: 0.5s; opacity: 0; }
+    </style>
+</head>
+<body class="bg-slate-50 text-dark">
+
+<div class="min-h-screen flex relative">
+
+    {# ===== LEFT PANEL — Photo ===== #}
+    <div class="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden">
+
+        {# Background image #}
+        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=85&w=1400"
+             alt="Immobilier premium"
+             class="absolute inset-0 w-full h-full object-cover">
+
+        {# Dark overlay #}
+        <div class="absolute inset-0 bg-gradient-to-br from-dark/90 via-dark/70 to-indigo-900/60"></div>
+
+        {# Right-edge blur bleed into form panel #}
+        <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-r from-transparent to-white/10 backdrop-blur-xl" style="mask-image: linear-gradient(to right, transparent, white);-webkit-mask-image:linear-gradient(to right, transparent, white);"></div>
+
+        {# Content over image #}
+        <div class="relative z-10 flex flex-col justify-between p-12 w-full">
+
+            {# Logo top-left #}
+            <div class="flex items-center gap-3 fade-up">
+                <div class="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-building text-white text-lg"></i>
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="font-serif text-xl font-black text-white tracking-tight">{{ global_settings.agency_name|default('ImmoPro') }}</span>
+                    <span class="text-[9px] font-black uppercase tracking-[0.3em] text-gold">Premium</span>
+                </div>
+            </div>
+
+            {# Central quote #}
+            <div>
+                <p class="text-[11px] font-black uppercase tracking-[0.3em] text-gold mb-5 fade-up delay-1">Rejoignez-nous</p>
+                <h2 class="font-serif text-4xl xl:text-5xl text-white leading-tight mb-6 fade-up delay-2">
+                    Créez votre<br>espace <span class="italic text-indigo-300">personnel</span>
+                </h2>
+                <p class="text-slate-400 text-sm max-w-sm leading-relaxed fade-up delay-3">
+                    Découvrez nos biens exclusifs, suivez vos visites, et discutez avec nos agents en temps réel.
+                </p>
+            </div>
+
+            {# Bottom tagline #}
+            <div class="flex items-center gap-2 fade-up delay-4">
+                <div class="h-px flex-1 bg-white/10"></div>
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">© {{ 'now'|date('Y') }} {{ global_settings.agency_name|default('ImmoPro') }}</p>
+                <div class="h-px flex-1 bg-white/10"></div>
+            </div>
+        </div>
+    </div>
+
+    {# ===== CENTER BLUR DIVIDER ===== #}
+    <div class="hidden lg:block absolute left-[55%] xl:left-[55%] top-0 bottom-0 w-24 z-10 pointer-events-none" style="transform:translateX(-50%)">
+        <div class="w-full h-full backdrop-blur-2xl bg-white/5" style="mask-image:linear-gradient(to right, transparent 0%, white 40%, white 60%, transparent 100%);-webkit-mask-image:linear-gradient(to right, transparent 0%, white 40%, white 60%, transparent 100%);"></div>
+    </div>
+
+    {# ===== RIGHT PANEL — Form ===== #}
+    <div class="w-full lg:w-1/2 xl:w-[45%] flex items-center justify-center p-6 sm:p-10 bg-white/80 backdrop-blur-sm overflow-y-auto">
+        <div class="w-full max-w-md slide-in my-8">
+
+            {# Mobile logo (visible only on mobile) #}
+            <div class="flex items-center gap-2 mb-10 lg:hidden">
+                <div class="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+                    <i class="fa-solid fa-building text-white text-sm"></i>
+                </div>
+                <span class="font-serif text-lg font-black text-dark">{{ global_settings.agency_name|default('ImmoPro') }}</span>
+            </div>
+
+            {# Header #}
+            <div class="mb-10 fade-up delay-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500 mb-3">Inscription</p>
+                <h1 class="font-serif text-3xl xl:text-4xl text-dark leading-tight mb-2">
+                    Nouveau <span class="italic text-indigo-600">Client</span>
+                </h1>
+                <p class="text-slate-500 text-sm mt-3">Remplissez ce formulaire pour créer votre compte client.</p>
+            </div>
+
+            {{ form_start(registrationForm, {'attr': {'class': 'space-y-4'}}) }}
+
+                {# Error message #}
+                {% if not registrationForm.vars.valid %}
+                <div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl flex items-start gap-3 fade-up">
+                    <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-circle-exclamation text-rose-500 text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-black text-rose-700">Erreur dans le formulaire</p>
+                        <div class="text-xs text-rose-500 mt-0.5">{{ form_errors(registrationForm) }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Name #}
+                <div class="fade-up delay-2">
+                    {{ form_label(registrationForm.name, null, {'label_attr': {'class': 'block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'}}) }}
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-user text-sm"></i>
+                        </div>
+                        {{ form_widget(registrationForm.name, {'attr': {'class': 'input-field', 'placeholder': 'Jean Dupont'}}) }}
+                    </div>
+                    {{ form_errors(registrationForm.name, {'attr': {'class': 'text-rose-500 text-[10px] font-bold mt-1'}}) }}
+                </div>
+
+                {# Email #}
+                <div class="fade-up delay-2">
+                    {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'}}) }}
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-envelope text-sm"></i>
+                        </div>
+                        {{ form_widget(registrationForm.email, {'attr': {'class': 'input-field', 'placeholder': 'votre@email.com'}}) }}
+                    </div>
+                    {{ form_errors(registrationForm.email, {'attr': {'class': 'text-rose-500 text-[10px] font-bold mt-1'}}) }}
+                </div>
+
+                {# Phone #}
+                <div class="fade-up delay-3">
+                    {{ form_label(registrationForm.phone, null, {'label_attr': {'class': 'block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'}}) }}
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-phone text-sm"></i>
+                        </div>
+                        {{ form_widget(registrationForm.phone, {'attr': {'class': 'input-field', 'placeholder': '+224 620 00 00 00'}}) }}
+                    </div>
+                    {{ form_errors(registrationForm.phone, {'attr': {'class': 'text-rose-500 text-[10px] font-bold mt-1'}}) }}
+                </div>
+
+                {# Role #}
+                <div class="fade-up delay-3">
+                    {{ form_label(registrationForm.role, null, {'label_attr': {'class': 'block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'}}) }}
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-id-badge text-sm"></i>
+                        </div>
+                        {{ form_widget(registrationForm.role, {'attr': {'class': 'input-field appearance-none', 'style': 'padding-left: 3rem;'}}) }}
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                    {{ form_errors(registrationForm.role, {'attr': {'class': 'text-rose-500 text-[10px] font-bold mt-1'}}) }}
+                </div>
+
+                {# Passwords #}
+                <div class="fade-up delay-4">
+                    {{ form_label(registrationForm.plainPassword.first, null, {'label_attr': {'class': 'block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'}}) }}
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </div>
+                        {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'input-field', 'placeholder': '••••••••'}}) }}
+                    </div>
+                    {{ form_errors(registrationForm.plainPassword.first, {'attr': {'class': 'text-rose-500 text-[10px] font-bold mt-1'}}) }}
+                </div>
+                
+                <div class="fade-up delay-4">
+                    {{ form_label(registrationForm.plainPassword.second, null, {'label_attr': {'class': 'block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'}}) }}
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </div>
+                        {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'input-field', 'placeholder': '••••••••'}}) }}
+                    </div>
+                    {{ form_errors(registrationForm.plainPassword.second, {'attr': {'class': 'text-rose-500 text-[10px] font-bold mt-1'}}) }}
+                </div>
+
+                {# Submit #}
+                <div class="fade-up delay-5 mt-8">
+                    <button type="submit"
+                            class="w-full py-4 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 hover:shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all mt-4">
+                        <i class="fa-solid fa-user-plus mr-2"></i>
+                        Créer mon compte
+                    </button>
+                </div>
+
+            {{ form_end(registrationForm) }}
+
+            {# Footer note #}
+            <p class="mt-8 text-center text-xs text-slate-500 fade-up delay-5">
+                Vous avez déjà un compte ?<br>
+                <a href="{{ path('app_login') }}" class="text-indigo-600 font-bold hover:text-indigo-800 transition-colors inline-block mt-1">Connectez-vous ici</a>
+            </p>
+
+            <div class="mt-6 text-center fade-up delay-5">
+                <a href="{{ path('app_home') }}" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-dark transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Retour à l'accueil
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

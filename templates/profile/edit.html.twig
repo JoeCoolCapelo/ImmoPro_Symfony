@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <h2 class="font-black text-xl text-white leading-tight">
+            Paramètres du Profil
+        </h2>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 bg-slate-50/50 min-h-screen">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            {# Left Column: Avatar & Summary #}
+            <div class="md:col-span-1">
+                <div class="premium-card bg-white p-6 text-center">
+                    <div class="relative inline-block mb-4">
+                        <div class="w-32 h-32 rounded-3xl overflow-hidden bg-slate-100 shadow-xl mx-auto" id="avatarPreviewWrap">
+                            {% if user.photoUrl %}
+                                <img id="avatarPreview" src="{{ asset(user.photoUrl) }}" alt="{{ user.name }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <div id="avatarPlaceholder" class="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-300">
+                                    <i class="fa-solid fa-user text-5xl"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {# Hidden file input triggered by camera button #}
+                        <input type="file" name="photo" id="photoInput" accept="image/*" class="hidden" form="profile-form">
+                        <button type="button" onclick="document.getElementById('photoInput').click()"
+                                class="absolute -bottom-2 -right-2 w-10 h-10 bg-indigo-600 text-white rounded-xl shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-colors">
+                            <i class="fa-solid fa-camera text-xs"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-black text-slate-900 text-lg">{{ user.name }}</h3>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ user.roles[0]|replace({'ROLE_': ''}) }}</p>
+                    
+                    <div class="mt-8 pt-6 border-t border-slate-50 text-left space-y-4">
+                        <div class="flex items-center text-xs text-slate-500">
+                            <i class="fa-solid fa-envelope w-5 text-indigo-400"></i>
+                            <span class="ml-2 truncate">{{ user.email }}</span>
+                        </div>
+                        <div class="flex items-center text-xs text-slate-500">
+                            <i class="fa-solid fa-phone w-5 text-indigo-400"></i>
+                            <span class="ml-2">{{ user.phone|default('Non renseigné') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Right Column: Form #}
+            <div class="md:col-span-2 space-y-6">
+                <form action="{{ path('profile.update') }}" method="POST" enctype="multipart/form-data" class="premium-card bg-white p-8" id="profile-form">
+                    <h3 class="font-black text-slate-900 text-sm uppercase tracking-widest mb-8 pb-4 border-b border-slate-50">
+                        Informations Personnelles
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Nom Complet</label>
+                            <input type="text" name="name" value="{{ user.name }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Adresse Email</label>
+                            <input type="email" name="email" value="{{ user.email }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Téléphone</label>
+                            <input type="text" name="phone" value="{{ user.phone }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                        </div>
+                    </div>
+
+                    <div class="mt-10 flex justify-end">
+                        <button type="submit" class="px-8 py-3 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            Enregistrer les changements
+                        </button>
+                    </div>
+                </form>
+
+                <form action="{{ path('profile.password') }}" method="POST" class="premium-card bg-white p-8">
+                    <h3 class="font-black text-slate-900 text-sm uppercase tracking-widest mb-8 pb-4 border-b border-slate-50 text-rose-500">
+                        Sécurité du Compte
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-1">Nouveau Mot de Passe</label>
+                            <input type="password" name="password" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all" placeholder="Laisser vide pour ne pas changer">
+                        </div>
+                    </div>
+
+                    <div class="mt-10 flex justify-end">
+                        <button type="submit" class="px-8 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all">
+                            Mettre à jour le mot de passe
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.getElementById('photoInput')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const wrap = document.getElementById('avatarPreviewWrap');
+        // Remove placeholder if present
+        const placeholder = document.getElementById('avatarPlaceholder');
+        if (placeholder) placeholder.remove();
+
+        // Show or update preview image
+        let img = document.getElementById('avatarPreview');
+        if (!img) {
+            img = document.createElement('img');
+            img.id = 'avatarPreview';
+            img.className = 'w-full h-full object-cover';
+            wrap.appendChild(img);
+        }
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    // Auto-submit the profile form when a photo is chosen
+    document.getElementById('profile-form')?.submit();
+});
+</script>
+{% endblock %}

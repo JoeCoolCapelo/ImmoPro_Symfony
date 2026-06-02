@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des Transactions - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-dark pt-16 pb-12 relative overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-10">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="{{ path('app_home') }}" data-aos="fade-right" class="mr-4 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 hover:scale-105 transition-all shadow-lg">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <h2 data-aos="fade-left" data-aos-delay="100" class="font-black text-3xl md:text-5xl text-white leading-tight">
+                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_AGENT') %}
+                            Toutes les Transactions
+                        {% elseif is_granted('ROLE_PROPRIETAIRE') %}
+                            Transactions de mes Biens
+                        {% else %}
+                            Mes Transactions
+                        {% endif %}
+                    </h2>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 bg-slate-50/50 min-h-screen">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        
+        {# Search Bar #}
+        <div data-aos="fade-up" data-aos-delay="200" class="mb-8">
+            <form action="{{ path('transactions.index') }}" method="GET" class="flex gap-4">
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+                    </div>
+                    <input type="text" name="search" value="{{ app.request.query.get('search') }}" 
+                        placeholder="Rechercher par matricule (ex: #TR-42) ou titre du bien..." 
+                        class="block w-full pl-12 pr-4 py-4 bg-white border-none rounded-[1.5rem] shadow-sm text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all">
+                </div>
+                <button type="submit" class="px-8 py-4 bg-slate-900 text-white rounded-[1.5rem] text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg">
+                    Filtrer
+                </button>
+                {% if app.request.query.get('search') %}
+                    <a href="{{ path('transactions.index') }}" class="px-6 py-4 bg-white text-slate-500 rounded-[1.5rem] text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center">
+                        Effacer
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+
+        {% if transactions is empty %}
+            <div class="premium-card p-20 text-center bg-white">
+                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fa-solid fa-file-invoice-dollar text-4xl text-slate-200"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">Aucune transaction</h3>
+            </div>
+        {% else %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for transaction in transactions %}
+                    <div data-aos="fade-up" data-aos-delay="{{ 300 + loop.index0 * 100 }}" class="premium-card overflow-hidden flex flex-col group relative bg-white {{ transaction.isArchived ? 'opacity-75 grayscale-[0.5]' : '' }}">
+                        {% if transaction.isArchived %}
+                            <div class="absolute top-0 right-0 bg-slate-800 text-white text-[8px] font-black uppercase px-3 py-1 rounded-bl-xl z-10 tracking-widest">
+                                Archivée
+                            </div>
+                        {% endif %}
+
+                        <div class="p-6 flex-1">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="h-10 w-10 rounded-xl flex items-center justify-center shadow-lg {{ transaction.type == 'vente' ? 'bg-indigo-600 text-white' : 'bg-emerald-500 text-white' }}">
+                                    {% if transaction.type == 'vente' %}
+                                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-key"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">#TR-{{ transaction.id|format("%04d") }}</p>
+                                    <p class="text-xs font-bold text-slate-500">{{ transaction.createdAt|date('d/m/Y') }}</p>
+                                </div>
+                            </div>
+
+                            <h4 class="text-base font-black text-slate-900 mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                                {% if transaction.bien %}
+                                    <a href="{{ path('biens.show', {id: transaction.bien.id}) }}">{{ transaction.bien.titre }}</a>
+                                {% else %}
+                                    <span class="text-rose-500 italic text-sm">Propriété supprimée</span>
+                                {% endif %}
+                            </h4>
+
+                            <div class="space-y-2 mb-6">
+                                <div class="flex items-center text-xs text-slate-500">
+                                    <i class="fa-solid fa-user-tie w-5 text-indigo-400"></i>
+                                    <span class="font-bold">{{ transaction.agent ? transaction.agent.name : 'Agent inconnu' }}</span>
+                                </div>
+                                <div class="flex items-center text-xs text-slate-500">
+                                    <i class="fa-solid fa-user w-5 text-indigo-400"></i>
+                                    <span class="font-bold">{{ transaction.client ? transaction.client.name : 'Client inconnu' }}</span>
+                                </div>
+                                
+                                <div class="flex items-center text-[9px] mt-3 pt-3 border-t border-slate-100">
+                                    <div class="flex-1 flex flex-col">
+                                        <span class="text-slate-400 uppercase tracking-widest font-black mb-1">Accord Formel</span>
+                                        <div class="flex items-center gap-3">
+                                            <span class="font-bold {{ transaction.isClientSigned ? 'text-emerald-500' : 'text-slate-300' }}">
+                                                <i class="fa-solid {{ transaction.isClientSigned ? 'fa-check-double' : 'fa-clock' }} mr-1"></i> Client
+                                            </span>
+                                            <span class="text-slate-200">|</span>
+                                            <span class="font-bold {{ transaction.isOwnerSigned ? 'text-emerald-500' : 'text-slate-300' }}">
+                                                <i class="fa-solid {{ transaction.isOwnerSigned ? 'fa-check-double' : 'fa-clock' }} mr-1"></i> Proprio
+                                            </span>
+                                            <span class="text-slate-200">|</span>
+                                            <span class="font-bold {{ transaction.isAgencySigned ? 'text-indigo-500' : 'text-slate-300' }}">
+                                                <i class="fa-solid {{ transaction.isAgencySigned ? 'fa-check-double' : 'fa-clock' }} mr-1"></i> Agence
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-slate-50 rounded-2xl">
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Montant</p>
+                                        <p class="text-lg font-black text-slate-900">{{ transaction.montant|number_format(0, ',', ' ') }} <small class="text-[10px]">GNF</small></p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-1">Commission</p>
+                                        <p class="text-sm font-black text-emerald-600">{{ transaction.commissionMontant|number_format(0, ',', ' ') }} <small class="text-[8px]">GNF</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-50/50 border-t border-slate-50 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <a href="{{ path('transactions.show', {id: transaction.id}) }}" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors">
+                                    Détails &amp; Documents
+                                </a>
+                                {% if transaction.type == 'location' %}
+                                    <span class="text-slate-200">|</span>
+                                    <a href="{{ path('paiements.index', {id: transaction.id}) }}" class="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-800 transition-colors flex items-center gap-1">
+                                        <i class="fa-solid fa-wallet text-[9px]"></i> Loyers
+                                    </a>
+                                {% endif %}
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                {# Archivage : Agent responsable ou Admin seulement #}
+                                {% if is_granted('TRANSACTION_UPDATE', transaction) %}
+                                    <form action="{{ path('transactions.archive', {id: transaction.id}) }}" method="POST" class="inline">
+                                        <button type="submit" title="{{ transaction.isArchived ? 'Désarchiver' : 'Archiver' }}" class="p-2 {{ transaction.isArchived ? 'text-slate-400 hover:text-indigo-600' : 'text-slate-400 hover:text-rose-500' }} transition-colors">
+                                            <i class="fa-solid {{ transaction.isArchived ? 'fa-box-open' : 'fa-box-archive' }}"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="mt-10">
+                {{ knp_pagination_render(transactions) }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

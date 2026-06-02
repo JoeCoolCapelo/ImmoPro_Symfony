@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Contrat de {{ transaction.type|capitalize }}</title>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 20px; margin-bottom: 30px; }
+        .agency-name { font-size: 24px; font-weight: bold; color: #1e293b; margin: 0; }
+        .agency-details { font-size: 12px; color: #64748b; }
+        .contract-title { text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 30px; background-color: #f1f5f9; padding: 15px; border-radius: 8px; }
+        .section { margin-bottom: 25px; }
+        .section-title { font-size: 16px; font-weight: bold; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .grid { width: 100%; margin-bottom: 10px; }
+        .col-left { width: 30%; display: inline-block; font-weight: bold; color: #475569; }
+        .col-right { width: 68%; display: inline-block; }
+        .terms { font-size: 12px; text-align: justify; color: #475569; background-color: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 40px; }
+        .signatures { width: 100%; margin-top: 50px; }
+        .signature-box { width: 31%; display: inline-block; vertical-align: top; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; text-align: center; box-sizing: border-box; }
+        .signature-spacing { margin-left: 2%; }
+        .sign-title { font-weight: bold; text-transform: uppercase; font-size: 12px; color: #1e293b; margin-bottom: 10px; }
+        .sign-img { max-width: 100%; height: 60px; margin: 10px 0; object-fit: contain; }
+        .sign-date { font-size: 10px; color: #64748b; }
+        .footer { margin-top: 40px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #cbd5e1; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 class="agency-name">{{ settings.agency_name|default('ImmoPro') }}</h1>
+        <div class="agency-details">
+            {{ settings.agency_address|default('Conakry, Guinée') }}<br>
+            Tél: {{ settings.agency_phone|default('+224 000 000 000') }} | Email: {{ settings.agency_email|default('contact@immopro.gn') }}
+        </div>
+    </div>
+
+    <div class="contract-title">
+        CONTRAT DE {{ transaction.type|upper }}
+        <div style="font-size: 12px; font-weight: normal; margin-top: 5px;">Réf: #TR-{{ transaction.id|format("%04d") }}</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Les Parties</div>
+        
+        <div style="margin-bottom: 15px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">Le Propriétaire (Bailleur / Vendeur) :</div>
+            <div class="grid">
+                <span class="col-left">Nom complet :</span>
+                <span class="col-right">{{ transaction.bien.owner.name }}</span>
+            </div>
+        </div>
+
+        <div>
+            <div style="font-weight: bold; margin-bottom: 5px;">Le Client (Preneur / Acquéreur) :</div>
+            <div class="grid">
+                <span class="col-left">Nom complet :</span>
+                <span class="col-right">{{ transaction.client.name }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Objet du Contrat</div>
+        <div class="grid">
+            <span class="col-left">Désignation :</span>
+            <span class="col-right">{{ transaction.bien.titre }}</span>
+        </div>
+        <div class="grid">
+            <span class="col-left">Localisation :</span>
+            <span class="col-right">{{ transaction.bien.adresse }}, {{ transaction.bien.ville }}</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Conditions Financières</div>
+        <div class="grid">
+            <span class="col-left">Montant principal :</span>
+            <span class="col-right" style="font-weight: bold; font-size: 16px;">{{ transaction.montant|number_format(0, ',', ' ') }} GNF</span>
+        </div>
+        <div class="grid">
+            <span class="col-left">Date d'effet :</span>
+            <span class="col-right">{{ transaction.dateTransaction|date('d/m/Y') }}</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Dispositions Générales</div>
+        <div class="terms">
+            <p><strong>Article 1 :</strong> Les parties déclarent que les informations fournies ci-dessus sont exactes et acceptent d'être liées par les termes du présent contrat généré via la plateforme {{ settings.agency_name|default('ImmoPro') }}.</p>
+            <p><strong>Article 2 :</strong> La signature numérique apposée ci-dessous par les parties vaut consentement explicite et a la même valeur juridique qu'une signature manuscrite.</p>
+        </div>
+    </div>
+
+    <div class="signatures">
+        <div class="signature-box">
+            <div class="sign-title">Le Propriétaire</div>
+            {% if transaction.ownerSigned and transaction.ownerSignatureImage %}
+                <img src="{{ transaction.ownerSignatureImage }}" class="sign-img">
+                <div class="sign-date">Signé le {{ transaction.ownerSignedAt|date('d/m/Y') }}</div>
+            {% else %}
+                <div style="height: 60px; margin: 10px 0; color: #94a3b8; font-style: italic;">(En attente)</div>
+            {% endif %}
+        </div>
+
+        <div class="signature-box signature-spacing">
+            <div class="sign-title">Le Client</div>
+            {% if transaction.clientSigned and transaction.clientSignatureImage %}
+                <img src="{{ transaction.clientSignatureImage }}" class="sign-img">
+                <div class="sign-date">Signé le {{ transaction.clientSignedAt|date('d/m/Y') }}</div>
+            {% else %}
+                <div style="height: 60px; margin: 10px 0; color: #94a3b8; font-style: italic;">(En attente)</div>
+            {% endif %}
+        </div>
+
+        <div class="signature-box signature-spacing">
+            <div class="sign-title">L'Agence</div>
+            {% if transaction.agencySigned and transaction.agencySignatureImage %}
+                <img src="{{ transaction.agencySignatureImage }}" class="sign-img">
+                <div class="sign-date">Signé le {{ transaction.agencySignedAt|date('d/m/Y') }}</div>
+            {% else %}
+                <div style="height: 60px; margin: 10px 0; color: #94a3b8; font-style: italic;">(En attente)</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="footer">
+        Document généré automatiquement le {{ "now"|date('d/m/Y') }}.
+    </div>
+
+</body>
+</html>

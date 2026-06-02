@@ -1,0 +1,86 @@
+<footer class="bg-dark text-white pt-24 pb-12 overflow-hidden relative">
+    <!-- Abstract background blobs -->
+    <div class="absolute top-0 right-0 -translate-y-12 translate-x-12 w-64 h-64 bg-premium/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 bg-gold/5 rounded-full blur-3xl"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <!-- Brand Info -->
+            <div class="col-span-1 md:col-span-1">
+                <a href="{{ path('app_home') }}" class="flex items-center space-x-2 mb-8">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-house-chimney text-dark text-lg"></i>
+                    </div>
+                    <div class="flex flex-col leading-none">
+                        <span class="text-xl font-serif font-black tracking-tighter text-white">ImmoPro</span>
+                        <span class="text-[9px] font-black uppercase tracking-[0.3em] text-gold">Premium</span>
+                    </div>
+                </a>
+                <p class="text-slate-400 text-sm leading-relaxed mb-8">
+                    L'excellence immobilière en Guinée. Nous redéfinissons le luxe et le service pour une clientèle exigeante.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-premium hover:border-premium transition-all">
+                        <i class="fa-brands fa-instagram text-xs"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-premium hover:border-premium transition-all">
+                        <i class="fa-brands fa-linkedin-in text-xs"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-premium hover:border-premium transition-all">
+                        <i class="fa-brands fa-facebook-f text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Links 1 -->
+            <div>
+                <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8">Navigation</h4>
+                <ul class="space-y-4">
+                    <li><a href="{{ path('biens.index') }}" class="text-sm text-slate-400 hover:text-white transition-colors">Catalogue Immobilier</a></li>
+                    <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Nos Services</a></li>
+                    <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Estimation de Bien</a></li>
+                    <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Espace Agent</a></li>
+                </ul>
+            </div>
+
+            <!-- Links 2 -->
+            <div>
+                <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8">Légal</h4>
+                <ul class="space-y-4">
+                    <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Mentions Légales</a></li>
+                    <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Confidentialité</a></li>
+                    <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">CGU</a></li>
+                    <li><a href="#" class="text-sm text-slate-400 hover:text-white transition-colors">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-gold mb-8">Siège Social</h4>
+                <ul class="space-y-6">
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-location-dot mt-1 text-premium mr-4"></i>
+                        <span class="text-sm text-slate-400">{{ global_settings.agency_address }}</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fa-solid fa-phone text-premium mr-4"></i>
+                        <span class="text-sm text-slate-400">{{ global_settings.agency_phone }}</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fa-solid fa-envelope text-premium mr-4"></i>
+                        <span class="text-sm text-slate-400">{{ global_settings.agency_email }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="pt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                © {{ 'now'|date('Y') }} ImmoPro Premium. Made for Luxury.
+            </p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Conakry, Guinée</span>
+            </div>
+        </div>
+    </div>
+</footer>

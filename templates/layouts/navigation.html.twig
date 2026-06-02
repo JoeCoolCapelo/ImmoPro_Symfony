@@ -1,0 +1,153 @@
+<nav x-data="{ open: false }" class="relative bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl border-b border-white/10 w-full z-[100] transition-all duration-300 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]">
+    <!-- Primary Navigation Menu -->
+    <div class="max-w-[95%] mx-auto px-2 sm:px-4 lg:px-6">
+        <div class="flex justify-between h-16">
+            <div class="flex">
+                <!-- Logo -->
+                <div class="shrink-0 flex items-center">
+                    <a href="{{ path('app_home') }}" class="flex items-center space-x-3 group">
+                        {% if global_settings.agency_logo is defined and global_settings.agency_logo %}
+                            <img src="{{ asset(global_settings.agency_logo) }}" alt="Logo" class="h-10 w-10 rounded-xl object-cover border border-slate-100 shadow-sm transition-transform group-hover:scale-110">
+                        {% else %}
+                            <div class="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center text-white shadow-md border border-white/10">
+                                <i class="fa-solid fa-building text-lg"></i>
+                            </div>
+                        {% endif %}
+                        <span class="font-black text-white tracking-tighter text-lg">{{ global_settings.agency_name|default('ImmoPro') }}</span>
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="hidden space-x-2 sm:-my-px sm:ms-6 sm:flex">
+
+                    {# ===== Dashboard (tous les utilisateurs connectés) ===== #}
+                    <a href="{{ path('app_home') }}" class="inline-flex items-center px-3 py-2 text-[11px] font-black uppercase tracking-widest leading-5 text-white {{ app.request.attributes.get('_route') == 'app_home' ? 'bg-white/20 rounded-xl shadow-inner' : 'hover:bg-white/10 rounded-xl' }} transition duration-150 ease-in-out">
+                        <i class="fa-solid fa-table-columns mr-2"></i>
+                        Dashboard
+                    </a>
+
+                    {# ===== Catalogue (tout le monde) ===== #}
+                    <a href="{{ path('biens.index') }}" class="inline-flex items-center px-3 py-2 text-[11px] font-black uppercase tracking-widest leading-5 text-white {{ app.request.attributes.get('_route') starts with 'biens.' ? 'bg-white/20 rounded-xl shadow-inner' : 'hover:bg-white/10 rounded-xl' }} transition duration-150 ease-in-out">
+                        <i class="fa-solid fa-house-chimney mr-2"></i>
+                        Catalogue
+                    </a>
+
+                    {# ===== Visites (tous les utilisateurs connectés) ===== #}
+                    {% if app.user %}
+                        <a href="{{ path('visites.index') }}" class="inline-flex items-center px-3 py-2 text-[11px] font-black uppercase tracking-widest leading-5 text-white {{ app.request.attributes.get('_route') starts with 'visites.' ? 'bg-white/20 rounded-xl shadow-inner' : 'hover:bg-white/10 rounded-xl' }} transition duration-150 ease-in-out">
+                            <i class="fa-solid fa-calendar-check mr-2"></i>
+                            Visites
+                        </a>
+                    {% endif %}
+
+                    {# ===== Transactions (Agent, Proprio, Client, Admin) ===== #}
+                    {% if is_granted('TRANSACTION_VIEW_ANY') %}
+                        <a href="{{ path('transactions.index') }}" class="inline-flex items-center px-3 py-2 text-[11px] font-black uppercase tracking-widest leading-5 text-white {{ app.request.attributes.get('_route') starts with 'transactions.' ? 'bg-white/20 rounded-xl shadow-inner' : 'hover:bg-white/10 rounded-xl' }} transition duration-150 ease-in-out">
+                            <i class="fa-solid fa-file-invoice-dollar mr-2"></i>
+                            Transactions
+                        </a>
+                    {% endif %}
+
+                    {# ===== CRM Pipeline (Agent & Admin seulement) ===== #}
+                    {% if is_granted('ROLE_AGENT') %}
+                        <a href="{{ path('admin.crm.index') }}" class="inline-flex items-center px-3 py-2 text-[11px] font-black uppercase tracking-widest leading-5 text-white {{ app.request.attributes.get('_route') == 'admin.crm.index' ? 'bg-white/20 rounded-xl shadow-inner' : 'hover:bg-white/10 rounded-xl' }} transition duration-150 ease-in-out">
+                            <i class="fa-solid fa-layer-group mr-2"></i>
+                            Pipeline
+                        </a>
+                    {% endif %}
+
+                    {# ===== Menu Gestion (Admin seulement) ===== #}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <div class="relative flex items-center" x-data="{ open: false }">
+                            <button @click="open = !open" class="inline-flex items-center px-3 py-2 text-[11px] font-black uppercase tracking-widest leading-5 text-white hover:bg-white/10 rounded-xl transition ease-in-out duration-150">
+                                <i class="fa-solid fa-gears mr-2"></i>
+                                Gestion
+                                <svg class="fill-current h-4 w-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" class="absolute top-full left-0 mt-2 w-56 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden py-1">
+                                <a href="{{ path('admin.users') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs text-white hover:bg-white/10">
+                                    <i class="fa-solid fa-users w-4 text-slate-400"></i> Utilisateurs
+                                </a>
+                                <a href="{{ path('documents.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs text-white hover:bg-white/10">
+                                    <i class="fa-solid fa-file-contract w-4 text-slate-400"></i> Documents &amp; Contrats
+                                </a>
+                                <a href="{{ path('expenses.index') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs text-white hover:bg-white/10">
+                                    <i class="fa-solid fa-wallet w-4 text-slate-400"></i> Dépenses
+                                </a>
+                                <a href="{{ path('admin.reports') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs text-white hover:bg-white/10">
+                                    <i class="fa-solid fa-chart-line w-4 text-slate-400"></i> Rapports
+                                </a>
+                                <div class="border-t border-white/10 my-1"></div>
+                                <a href="{{ path('admin.settings') }}" class="flex items-center gap-3 px-4 py-2.5 text-xs text-white hover:bg-white/10">
+                                    <i class="fa-solid fa-sliders w-4 text-slate-400"></i> Paramètres
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <!-- Clock / Date Component -->
+                <div x-data="{ 
+                        time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }), 
+                        date: new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) 
+                    }" 
+                    x-init="setInterval(() => { 
+                        time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
+                        date = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); 
+                    }, 1000)"
+                    class="flex flex-col items-end mr-2 sm:mr-4 px-3 py-1.5 bg-slate-900/40 dark:bg-white/10 rounded-xl border border-white/20 shadow-inner select-none backdrop-blur-md" style="min-width: 100px;">
+                    <span x-text="time" class="text-xs sm:text-sm font-black tracking-widest font-mono text-white drop-shadow-md"></span>
+                    <span x-text="date" class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-slate-200 drop-shadow-sm"></span>
+                </div>
+                <!-- Dark Mode Toggle -->
+                <button 
+                    @click="
+                        darkMode = !darkMode; 
+                        localStorage.setItem('dark-mode', darkMode);
+                        if (darkMode) {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                    "
+                    x-data="{ darkMode: localStorage.getItem('dark-mode') === 'true' }"
+                    class="p-2 text-slate-400 hover:text-indigo-600 transition-colors duration-200"
+                >
+                    <i x-show="!darkMode" class="fa-solid fa-moon text-xl"></i>
+                    <i x-show="darkMode" class="fa-solid fa-sun text-xl text-amber-400" x-cloak></i>
+                </button>
+
+                {% if app.user %}
+                    <!-- User Dropdown -->
+                    <div class="relative flex items-center" x-data="{ open: false }">
+                        <button @click="open = !open" class="inline-flex items-center p-1 border border-white/10 rounded-full bg-white/5 hover:bg-white/10 transition duration-150">
+                            <div class="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center border-2 border-white/20 overflow-hidden">
+                                {% if app.user.photoUrl %}
+                                    <img src="{{ asset(app.user.photoUrl) }}" class="h-full w-full object-cover">
+                                {% else %}
+                                    <span class="text-white text-xs font-black">{{ app.user.name|slice(0, 1)|upper }}</span>
+                                {% endif %}
+                            </div>
+                        </button>
+                        <div x-show="open" @click.away="open = false" class="absolute top-full right-0 mt-2 w-48 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden py-1">
+                            <a href="{{ path('profile.edit') }}" class="block px-4 py-2 text-xs text-white hover:bg-white/10">
+                                <i class="fa-solid fa-user-circle mr-2 text-slate-400"></i> Profil
+                            </a>
+                            <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-xs text-rose-600 hover:bg-rose-50/10">
+                                <i class="fa-solid fa-right-from-bracket mr-2"></i> Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ path('app_login') }}" class="text-xs font-black uppercase tracking-widest text-white/70 hover:text-white transition-colors">Connexion</a>
+                        {# Assuming registration is enabled #}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

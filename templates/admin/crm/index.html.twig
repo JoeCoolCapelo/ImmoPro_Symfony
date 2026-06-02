@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pipeline Leads - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-dark pt-16 pb-12 relative overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-10">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="{{ path('app_home') }}" class="mr-4 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 hover:scale-105 transition-all shadow-lg">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <h2 class="font-black text-3xl md:text-5xl text-white leading-tight">
+                        Pipeline CRM
+                    </h2>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-xs font-black text-white uppercase tracking-widest border border-white/10">
+                        {{ leads|length + confirmed|length + negotiations|length + won|length }} Prospects
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 bg-slate-50/50 min-h-screen">
+    <div class="max-w-[98%] mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col lg:flex-row gap-6 overflow-x-auto pb-6">
+            
+            {# 1. LEADS (Visites en attente) #}
+            <div class="flex-1 min-w-[320px]">
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h3 class="font-black text-slate-400 text-[11px] uppercase tracking-[0.2em]">Piste (Leads)</h3>
+                    <span class="h-5 w-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-black text-slate-600">{{ leads|length }}</span>
+                </div>
+                <div class="space-y-4">
+                    {% for visite in leads %}
+                        <div class="premium-card p-4 bg-white border-l-4 border-slate-300">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[9px] font-black uppercase">Visite</span>
+                                <span class="text-[10px] text-slate-400 font-bold">{{ visite.dateVisite|date('d/m') }}</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm mb-1">{{ visite.client.name|default('Anonyme') }}</h4>
+                            <p class="text-xs text-slate-500 truncate">{{ visite.bien.titre }}</p>
+                        </div>
+                    {% else %}
+                        <div class="border-2 border-dashed border-slate-200 rounded-3xl p-8 text-center">
+                            <p class="text-xs text-slate-400 font-bold italic">Aucun lead</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# 2. CONFIRMÉ (Visites terminées) #}
+            <div class="flex-1 min-w-[320px]">
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h3 class="font-black text-indigo-400 text-[11px] uppercase tracking-[0.2em]">Confirmé</h3>
+                    <span class="h-5 w-5 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-black text-indigo-600">{{ confirmed|length }}</span>
+                </div>
+                <div class="space-y-4">
+                    {% for visite in confirmed %}
+                        <div class="premium-card p-4 bg-white border-l-4 border-indigo-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-[9px] font-black uppercase">Intéressé</span>
+                                <i class="fa-solid fa-check-double text-indigo-400 text-xs"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm mb-1">{{ visite.client.name|default('Anonyme') }}</h4>
+                            <p class="text-xs text-slate-500 truncate">{{ visite.bien.titre }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# 3. NÉGOCIATION (Transactions en attente) #}
+            <div class="flex-1 min-w-[320px]">
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h3 class="font-black text-amber-400 text-[11px] uppercase tracking-[0.2em]">Négociation</h3>
+                    <span class="h-5 w-5 rounded-full bg-amber-100 flex items-center justify-center text-[10px] font-black text-amber-600">{{ negotiations|length }}</span>
+                </div>
+                <div class="space-y-4">
+                    {% for trans in negotiations %}
+                        <div class="premium-card p-4 bg-white border-l-4 border-amber-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-1 bg-amber-50 text-amber-600 rounded text-[9px] font-black uppercase">Contrat</span>
+                                <span class="text-[10px] text-amber-600 font-black">{{ trans.montant|number_format(0, ',', ' ') }} GNF</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm mb-1">{{ trans.client.name|default('Anonyme') }}</h4>
+                            <p class="text-xs text-slate-500 truncate">{{ trans.bien.titre }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# 4. GAGNÉ (Transactions validées) #}
+            <div class="flex-1 min-w-[320px]">
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h3 class="font-black text-emerald-400 text-[11px] uppercase tracking-[0.2em]">Gagné</h3>
+                    <span class="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center text-[10px] font-black text-emerald-600">{{ won|length }}</span>
+                </div>
+                <div class="space-y-4">
+                    {% for trans in won %}
+                        <div class="premium-card p-4 bg-white border-l-4 border-emerald-500">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded text-[9px] font-black uppercase">Succès</span>
+                                <i class="fa-solid fa-crown text-amber-400"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm mb-1">{{ trans.client.name|default('Anonyme') }}</h4>
+                            <p class="text-xs text-slate-500 truncate">{{ trans.bien.titre }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Dépenses - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-dark pt-16 pb-24 relative overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-10">
+            <div class="flex justify-between items-end">
+                <div class="flex items-center">
+                    <a href="{{ path('app_home') }}" class="mr-4 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 hover:scale-105 transition-all shadow-lg">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h2 class="font-serif text-3xl md:text-5xl text-white leading-tight">
+                            Gestion des <span class="italic text-gold">Dépenses</span>
+                        </h2>
+                        <p class="text-slate-400 mt-2 text-sm">Suivez et imputez les charges financières liées aux propriétés.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 bg-slate-50 min-h-screen -mt-16 relative z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Flash Messages -->
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="mb-6 p-4 rounded-xl {% if label == 'success' %}bg-emerald-50 text-emerald-700 border border-emerald-200{% else %}bg-rose-50 text-rose-700 border border-rose-200{% endif %} flex items-center shadow-sm">
+                    <i class="fa-solid {% if label == 'success' %}fa-check-circle text-emerald-500{% else %}fa-circle-exclamation text-rose-500{% endif %} mr-3 text-lg"></i>
+                    <span class="font-bold text-sm">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Form: Add Expense -->
+            <div class="lg:col-span-1">
+                <div class="premium-card p-6 bg-white sticky top-28">
+                    <h3 class="font-black text-dark text-xs uppercase tracking-widest mb-6 pb-4 border-b border-slate-50">
+                        <i class="fa-solid fa-plus text-premium mr-2"></i> Nouvelle Dépense
+                    </h3>
+                    
+                    <form action="{{ path('expenses.store') }}" method="POST" class="space-y-5">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Propriété concernée *</label>
+                            <select name="bien_id" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-premium transition-all">
+                                <option value="">Sélectionnez un bien</option>
+                                {% for bien in biens %}
+                                    <option value="{{ bien.id }}">{{ bien.titre }} ({{ bien.owner.name|default('Sans proprio') }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Montant (GNF) *</label>
+                            <input type="number" name="amount" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-premium transition-all" placeholder="Ex: 500000">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Date *</label>
+                            <input type="date" name="date" required value="{{ 'now'|date('Y-m-d') }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-premium transition-all">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Description / Motif</label>
+                            <textarea name="description" rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-premium transition-all resize-none" placeholder="Réparations plomberie..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-premium w-full mt-4">Enregistrer</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- List: Expenses -->
+            <div class="lg:col-span-2">
+                <div class="premium-card bg-white overflow-hidden">
+                    <div class="p-6 border-b border-slate-50 flex justify-between items-center">
+                        <h3 class="font-black text-dark text-xs uppercase tracking-widest">Historique des charges</h3>
+                        <span class="text-xs font-bold text-slate-400">{{ expenses|length }} entrées</span>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100">
+                                    <th class="px-6 py-4">Date</th>
+                                    <th class="px-6 py-4">Propriété</th>
+                                    <th class="px-6 py-4">Description</th>
+                                    <th class="px-6 py-4 text-right">Montant</th>
+                                    <th class="px-6 py-4 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-xs divide-y divide-slate-50">
+                                {% for expense in expenses %}
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-600">
+                                            {{ expense.date|date('d/m/Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 font-bold text-dark max-w-[200px] truncate">
+                                            {{ expense.bien.titre }}
+                                        </td>
+                                        <td class="px-6 py-4 text-slate-500 max-w-[200px] truncate">
+                                            {{ expense.description|default('-') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right font-black text-rose-600">
+                                            - {{ expense.amount|number_format(0, ',', ' ') }} <span class="text-[9px] text-slate-400">GNF</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                                            <form action="{{ path('expenses.delete', {id: expense.id}) }}" method="POST" onsubmit="return confirm('Supprimer cette dépense ?');" class="inline-block">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ expense.id) }}">
+                                                <button type="submit" class="w-8 h-8 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-500 hover:text-white transition-colors" title="Supprimer">
+                                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-12 text-center text-slate-400 text-xs font-bold">
+                                            <i class="fa-solid fa-receipt text-3xl mb-3 text-slate-200"></i>
+                                            <br>Aucune dépense enregistrée.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

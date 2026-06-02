@@ -1,0 +1,221 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative min-h-[95vh] flex items-center pt-24 overflow-hidden bg-dark">
+    <!-- Background Elements -->
+    <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover opacity-60" alt="Luxury Mansion">
+        <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/40 to-transparent"></div>
+    </div>
+
+    <!-- Animated Blobs -->
+    <div class="absolute top-1/4 -left-20 w-72 h-72 bg-premium/20 rounded-full blur-[120px] animate-blob"></div>
+    <div class="absolute bottom-1/4 -right-20 w-72 h-72 bg-gold/10 rounded-full blur-[120px] animate-blob animation-delay-2000"></div>
+
+    <div class="container relative z-10 mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <span data-aos="fade-down" class="inline-block px-5 py-2 bg-white/10 backdrop-blur-md text-white rounded-full text-[10px] font-black uppercase tracking-[0.4em] mb-10 border border-white/20">
+                L'immobilier d'exception en Guinée
+            </span>
+            <h1 data-aos="fade-up" data-aos-delay="200" class="text-6xl md:text-9xl font-serif text-white leading-[0.9] mb-12 tracking-tighter">
+                Redéfinir <br><span class="italic text-gold">votre espace</span>
+            </h1>
+            
+            <!-- Floating Search -->
+            <div data-aos="zoom-in" data-aos-delay="400" class="glass p-3 rounded-[2.5rem] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.5)] border-white/20 mt-16 group">
+                <form action="{{ path('biens.index') }}" class="flex flex-col md:flex-row items-center gap-3">
+                    <div class="flex-1 w-full px-8 py-4 text-left">
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Localisation</label>
+                        <input type="text" placeholder="Conakry, Kaloum, Kamsar..." class="bg-transparent border-none w-full font-black text-white placeholder-slate-500 focus:ring-0 p-0 text-sm">
+                    </div>
+                    <div class="hidden md:block w-px h-12 bg-white/10"></div>
+                    <div class="flex-1 w-full px-8 py-4 text-left">
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Budget Max</label>
+                        <select class="bg-transparent border-none w-full font-black text-white focus:ring-0 p-0 text-sm appearance-none">
+                            <option class="bg-dark">Sans limite</option>
+                            <option class="bg-dark">500 M GNF</option>
+                            <option class="bg-dark">1 Mrd GNF</option>
+                            <option class="bg-dark">5 Mrd GNF+</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-premium w-full md:w-auto h-16 md:px-12 rounded-[1.8rem] !bg-premium hover:!bg-white hover:!text-premium transition-all duration-500 flex items-center justify-center">
+                        <i class="fa-solid fa-magnifying-glass mr-3"></i> Explorer
+                    </button>
+                </form>
+            </div>
+
+            <!-- Stats Mini -->
+            <div data-aos="fade-up" data-aos-delay="600" class="grid grid-cols-3 gap-8 mt-24 max-w-2xl mx-auto border-t border-white/10 pt-12">
+                <div class="text-center">
+                    <p class="text-3xl font-serif text-white mb-1">2.4k+</p>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Biens de Luxe</p>
+                </div>
+                <div class="text-center border-x border-white/10">
+                    <p class="text-3xl font-serif text-white mb-1">150+</p>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Agents Experts</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-3xl font-serif text-white mb-1">98%</p>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Satisfaction</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Section -->
+<section class="py-32 bg-slate-50 relative overflow-hidden">
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+            <div class="max-w-xl">
+                <span data-aos="fade-right" class="text-[10px] font-black text-premium uppercase tracking-[0.4em] mb-4 block">Notre Sélection</span>
+                <h2 data-aos="fade-right" data-aos-delay="100" class="text-5xl font-serif text-dark leading-tight">Résidences <br><span class="italic">Prestigieuses</span></h2>
+            </div>
+            <div data-aos="fade-left" data-aos-delay="200" class="flex items-center space-x-6">
+                <a href="{{ path('biens.index') }}" class="text-[11px] font-black uppercase tracking-widest text-dark border-b-2 border-gold pb-1 hover:border-premium transition-all">
+                    Voir tout le catalogue <i class="fa-solid fa-arrow-right-long ml-4"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {% for bien in featured_biens|default([]) %}
+                <div data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                    {% include 'components/_property_card.html.twig' with {'bien': bien} %}
+                </div>
+            {% else %}
+                {# Demo Cards if no data #}
+                {% for i in 1..3 %}
+                    <div data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}" class="premium-card group h-full flex flex-col">
+                        <div class="relative h-72 overflow-hidden rounded-[1.8rem] m-2">
+                            <img src="https://images.unsplash.com/photo-1600607687940-4e5a9942d4b7?auto=format&fit=crop&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="">
+                            <div class="absolute bottom-4 right-4 bg-dark text-white px-5 py-2 rounded-2xl font-black text-lg">
+                                1 500 000 <small class="text-[10px]">GNF</small>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-black text-lg mb-2">Villa Riviera Conakry</h3>
+                            <p class="text-slate-400 text-xs mb-6 flex items-center">
+                                <i class="fa-solid fa-location-dot mr-2 text-gold"></i> Camayenne, Dixinn
+                            </p>
+                            <div class="flex items-center justify-between pt-6 border-t border-slate-50">
+                                <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Détails <i class="fa-solid fa-chevron-right ml-2"></i></span>
+                                <div class="flex space-x-4">
+                                    <span class="text-xs font-black text-dark">450m²</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Why Us / Services Section -->
+<section id="services" class="py-32 bg-white">
+    <div class="container mx-auto px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+            <div class="relative">
+                <div data-aos="zoom-in" data-aos-duration="1000" class="w-full aspect-square rounded-[3rem] overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000" class="w-full h-full object-cover" alt="Luxury Real Estate">
+                </div>
+                <div data-aos="fade-up" data-aos-delay="400" data-aos-offset="-100" class="absolute -bottom-12 -right-12 glass p-10 rounded-[2.5rem] shadow-2xl max-w-xs border-white/50">
+                    <h4 class="font-serif text-3xl mb-4">L'Art de <br><span class="italic">Vivre</span></h4>
+                    <p class="text-xs text-slate-500 leading-relaxed mb-6">Chaque propriété que nous proposons est une œuvre d'art unique, sélectionnée pour son caractère exceptionnel.</p>
+                    <a href="{{ path('biens.index') }}" class="text-[10px] font-black uppercase tracking-widest text-premium">En savoir plus →</a>
+                </div>
+            </div>
+            <div class="lg:pl-12">
+                <span data-aos="fade-right" data-aos-delay="100" class="text-[10px] font-black text-premium uppercase tracking-[0.4em] mb-4 block">Pourquoi ImmoPro ?</span>
+                <h2 data-aos="fade-right" data-aos-delay="200" class="text-5xl font-serif text-dark leading-tight mb-12">Plus qu'une agence, <br><span class="italic">un partenaire de vie</span></h2>
+                
+                <div class="space-y-12">
+                    <div data-aos="fade-up" data-aos-delay="300" class="flex items-start">
+                        <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0 group hover:bg-premium transition-all duration-500">
+                            <i class="fa-solid fa-shield-halved text-2xl text-premium group-hover:text-white"></i>
+                        </div>
+                        <div class="ml-8">
+                            <h4 class="font-black text-lg mb-2">Sécurité & Confidentialité</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">Transactions hautement sécurisées et discrétion absolue pour tous nos clients.</p>
+                        </div>
+                    </div>
+                    <div data-aos="fade-up" data-aos-delay="400" class="flex items-start">
+                        <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0 group hover:bg-premium transition-all duration-500">
+                            <i class="fa-solid fa-gem text-2xl text-premium group-hover:text-white"></i>
+                        </div>
+                        <div class="ml-8">
+                            <h4 class="font-black text-lg mb-2">Portfolio Exclusif</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed">Accès prioritaire aux biens les plus prisés avant leur mise sur le marché public.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Membres de l'Agence Section -->
+<section id="membres" class="py-32 bg-slate-50 relative overflow-hidden">
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-20">
+            <span data-aos="fade-down" class="text-[10px] font-black text-premium uppercase tracking-[0.4em] mb-4 block">Notre Équipe</span>
+            <h2 data-aos="fade-up" data-aos-delay="100" class="text-5xl font-serif text-dark leading-tight mb-6">Membres de <span class="italic">l'Agence</span></h2>
+            <p data-aos="fade-up" data-aos-delay="200" class="text-sm text-slate-500 leading-relaxed">
+                Des experts passionnés à votre service pour vous guider dans toutes vos transactions immobilières de prestige.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {# Membre 1 (Directeur) #}
+            <div data-aos="fade-up" data-aos-delay="100" class="premium-card group h-full flex flex-col bg-white">
+                <div class="relative h-96 overflow-hidden rounded-[1.8rem] m-2">
+                    {% if global_settings.team_member_1_photo|default(false) %}
+                        <img src="{{ asset(global_settings.team_member_1_photo) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ global_settings.team_member_1_name|default('Directeur') }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Directeur">
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                <div class="p-6 text-center">
+                    <h3 class="font-black text-xl mb-1 text-slate-900">{{ global_settings.team_member_1_name|default('M. Mohamed SYLLA') }}</h3>
+                    <p class="text-xs font-black uppercase tracking-widest text-gold">{{ global_settings.team_member_1_role|default('Directeur Général') }}</p>
+                </div>
+            </div>
+
+            {# Membre 2 (Comptable) #}
+            <div data-aos="fade-up" data-aos-delay="200" class="premium-card group h-full flex flex-col bg-white">
+                <div class="relative h-96 overflow-hidden rounded-[1.8rem] m-2">
+                    {% if global_settings.team_member_2_photo|default(false) %}
+                        <img src="{{ asset(global_settings.team_member_2_photo) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ global_settings.team_member_2_name|default('Comptable') }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Comptable">
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                <div class="p-6 text-center">
+                    <h3 class="font-black text-xl mb-1 text-slate-900">{{ global_settings.team_member_2_name|default('Mme. Aminata DIALLO') }}</h3>
+                    <p class="text-xs font-black uppercase tracking-widest text-gold">{{ global_settings.team_member_2_role|default('Responsable Financière / Comptable') }}</p>
+                </div>
+            </div>
+
+            {# Membre 3 (Responsable) #}
+            <div data-aos="fade-up" data-aos-delay="300" class="premium-card group h-full flex flex-col bg-white">
+                <div class="relative h-96 overflow-hidden rounded-[1.8rem] m-2">
+                    {% if global_settings.team_member_3_photo|default(false) %}
+                        <img src="{{ asset(global_settings.team_member_3_photo) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ global_settings.team_member_3_name|default('Responsable') }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Responsable">
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                </div>
+                <div class="p-6 text-center">
+                    <h3 class="font-black text-xl mb-1 text-slate-900">{{ global_settings.team_member_3_name|default('M. Alpha Oumar BARRY') }}</h3>
+                    <p class="text-xs font-black uppercase tracking-widest text-gold">{{ global_settings.team_member_3_role|default('Responsable Commercial / Transactions') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

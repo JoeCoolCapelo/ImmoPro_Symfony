@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Utilisateur - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-dark pt-12 pb-24 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <a href="{{ path('admin.users') }}" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-colors mb-4 inline-block">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Retour à la liste
+            </a>
+            <h2 class="font-serif text-3xl md:text-5xl text-white leading-tight">
+                Modifier <span class="italic text-indigo-400">{{ user.name }}</span>
+            </h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 bg-slate-50 min-h-screen -mt-16 relative z-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="premium-card bg-white p-10 shadow-xl shadow-slate-200/50">
+            <form action="{{ path('admin.users.edit', {id: user.id}) }}" method="POST" class="space-y-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Nom complet *</label>
+                        <input type="text" name="name" value="{{ user.name }}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-indigo-500 transition-all text-slate-700">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Adresse Email *</label>
+                        <input type="email" name="email" value="{{ user.email }}" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-indigo-500 transition-all text-slate-700">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Téléphone</label>
+                        <input type="text" name="phone" value="{{ user.phone }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-indigo-500 transition-all text-slate-700" placeholder="+224...">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Nouveau Mot de passe (optionnel)</label>
+                        <input type="password" name="password" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-indigo-500 transition-all text-slate-700" placeholder="Laissez vide pour conserver l'actuel">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Rôle *</label>
+                        <select name="role" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-indigo-500 transition-all text-slate-700">
+                            {% set current_role = user.roles|first|default('ROLE_CLIENT') %}
+                            <option value="ROLE_CLIENT" {% if current_role == 'ROLE_CLIENT' %}selected{% endif %}>Client</option>
+                            <option value="ROLE_PROPRIETAIRE" {% if current_role == 'ROLE_PROPRIETAIRE' %}selected{% endif %}>Propriétaire</option>
+                            <option value="ROLE_AGENT" {% if current_role == 'ROLE_AGENT' %}selected{% endif %}>Agent Immobilier</option>
+                            <option value="ROLE_ADMIN" {% if current_role == 'ROLE_ADMIN' %}selected{% endif %}>Administrateur (Directeur)</option>
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                <option value="ROLE_SUPER_ADMIN" {% if current_role == 'ROLE_SUPER_ADMIN' %}selected{% endif %}>Super Administrateur</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-slate-50 flex justify-end">
+                    <a href="{{ path('admin.users') }}" class="px-6 py-3 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-700 transition-colors mr-4">
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn-premium px-8 !bg-indigo-600 hover:!bg-indigo-700">
+                        Mettre à jour
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

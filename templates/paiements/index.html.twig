@@ -1,0 +1,186 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivi des Loyers - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-slate-900 pt-16 pb-12 relative overflow-hidden border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="{{ path('transactions.show', {id: transaction.id}) }}" class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-105 transition-all shadow-lg flex-shrink-0">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h2 class="font-black text-3xl text-white leading-tight tracking-tight">
+                            Suivi des Loyers
+                        </h2>
+                        <p class="text-xs text-indigo-300 mt-1 uppercase tracking-widest font-black">
+                            {{ transaction.bien.titre }} — {{ transaction.client.name|upper }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+{# French Date Mappings for Pixel-Perfect Parity #}
+{% set moisFr = {
+    '01': 'janvier', '02': 'février', '03': 'mars', '04': 'avril',
+    '05': 'mai', '06': 'juin', '07': 'juillet', '08': 'août',
+    '09': 'septembre', '10': 'octobre', '11': 'novembre', '12': 'décembre'
+} %}
+{% set moisAbbrFr = {
+    '01': 'SEPT.', '02': 'FEVR.', '03': 'MARS', '04': 'AVRIL',
+    '05': 'MAI', '06': 'JUIN', '07': 'JUIL.', '08': 'AOÛT',
+    '09': 'SEPT.', '10': 'OCT.', '11': 'NOV.', '12': 'DÉC.'
+} %}
+
+{# Calculate Metrics Dynamically #}
+{% set totalPercu = 0 %}
+{% set nbMoisEnRetard = 0 %}
+{% set currentDate = date() %}
+{% for p in paiements %}
+    {% if p.statut == 'payé' %}
+        {% set totalPercu = totalPercu + p.montantLoyer %}
+    {% else %}
+        {% if p.dateEcheance < currentDate %}
+            {% set nbMoisEnRetard = nbMoisEnRetard + 1 %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+<div class="py-12 bg-slate-50/50 min-h-screen">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+        {# 4 Metrics Cards row #}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            {# 1. Loyer Mensuel #}
+            <div class="premium-card p-8 bg-white border border-slate-100/50 shadow-sm rounded-3xl flex flex-col justify-between">
+                <div>
+                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Loyer Mensuel</span>
+                    <h3 class="text-3xl font-black text-slate-900 mt-3">
+                        {{ transaction.montant|number_format(0, ',', ' ') }} <small class="text-xs font-bold text-slate-400 uppercase">GNF</small>
+                    </h3>
+                </div>
+            </div>
+
+            {# 2. Commission/Mois #}
+            <div class="premium-card p-8 bg-white border border-slate-100/50 shadow-sm rounded-3xl flex flex-col justify-between">
+                <div>
+                    <span class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Commission/Mois</span>
+                    <h3 class="text-3xl font-black text-emerald-600 mt-3">
+                        {{ transaction.commissionMontant|number_format(0, ',', ' ') }} <small class="text-xs font-bold text-slate-400 uppercase">GNF</small>
+                    </h3>
+                    <p class="text-[10px] text-slate-400 font-bold mt-1">({{ transaction.commissionPourcentage|number_format(2) }}%)</p>
+                </div>
+            </div>
+
+            {# 3. Total Perçu #}
+            <div class="premium-card p-8 bg-white border border-slate-100/50 shadow-sm rounded-3xl flex flex-col justify-between">
+                <div>
+                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total Perçu</span>
+                    <h3 class="text-3xl font-black text-slate-900 mt-3">
+                        {{ totalPercu|number_format(0, ',', ' ') }} <small class="text-xs font-bold text-slate-400 uppercase">GNF</small>
+                    </h3>
+                </div>
+            </div>
+
+            {# 4. En Retard #}
+            <div class="premium-card p-8 bg-white border border-slate-100/50 shadow-sm rounded-3xl flex flex-col justify-between">
+                <div>
+                    <span class="text-[9px] font-black text-rose-500 uppercase tracking-widest">En Retard</span>
+                    <h3 class="text-3xl font-black text-slate-900 mt-3">
+                        {{ nbMoisEnRetard }} <span class="text-base font-bold text-slate-400">mois</span>
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        {# Action Buttons row #}
+        {% if is_granted('ROLE_AGENT') or is_granted('ROLE_ADMIN') %}
+            <div class="mb-12 flex flex-wrap justify-end items-center gap-4">
+                <form method="POST" action="{{ path('paiements.generer-annee', {id: transaction.id}) }}">
+                    <button type="submit" class="px-6 py-3.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-slate-400"></i> Générer l'échéancier annuel
+                    </button>
+                </form>
+                <form method="POST" action="{{ path('paiements.generer', {id: transaction.id}) }}">
+                    <button type="submit" class="px-6 py-3.5 bg-slate-950 text-white hover:bg-slate-900 transition rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus text-slate-400"></i> Générer le prochain mois
+                    </button>
+                </form>
+                <form method="POST" action="{{ path('paiements.encaisser-tout', {id: transaction.id}) }}">
+                    <button type="submit" onclick="return confirm('Encaisser tous les mois en attente ?')" class="px-8 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition shadow-lg shadow-emerald-500/20">
+                        Tout Encaisser
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+
+        {# Monthly cards grid #}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for paiement in paiements %}
+                <div class="premium-card p-8 bg-white shadow-sm border border-slate-100 rounded-[2.5rem] flex flex-col justify-between relative overflow-hidden group">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h4 class="text-xl font-black text-slate-900 leading-tight">
+                                    {{ moisFr[paiement.dateEcheance|date('m')] }} {{ paiement.dateEcheance|date('Y') }}
+                                </h4>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                                    Échéance : {{ paiement.dateEcheance|date('d') }} {{ (moisAbbrFr[paiement.dateEcheance|date('m')]|default(paiement.dateEcheance|date('M')|upper)) }} {{ paiement.dateEcheance|date('Y') }}
+                                </p>
+                            </div>
+                            
+                            {% if paiement.statut == 'payé' %}
+                                <span class="h-8 w-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs border border-emerald-100">
+                                    <i class="fa-solid fa-check"></i>
+                                </span>
+                            {% else %}
+                                <span class="h-8 w-8 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center text-xs border border-amber-100">
+                                    <i class="fa-solid fa-clock"></i>
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between items-center py-3 border-b border-slate-50 text-xs">
+                                <span class="text-slate-400 font-bold">Loyer Net</span>
+                                <span class="font-black text-slate-800">{{ paiement.montantLoyer|number_format(0, ',', ' ') }} GNF</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-400 font-bold">Commission ({{ paiement.commissionPourcentage|number_format(0) }}%)</span>
+                                <span class="font-black text-emerald-500">+ {{ paiement.commissionMontant|number_format(0, ',', ' ') }} GNF</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto">
+                        {% if paiement.statut == 'payé' %}
+                            <div class="w-full py-4 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest text-center rounded-2xl border border-emerald-100/50">
+                                Payé le {{ paiement.datePaiement|date('d/m/Y') }}
+                            </div>
+                        {% elseif is_granted('ROLE_AGENT') or is_granted('ROLE_ADMIN') %}
+                            <form method="POST" action="{{ path('paiements.payer', {id: paiement.id}) }}">
+                                <button type="submit" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-wallet"></i> Encaisser Loyer
+                                </button>
+                            </form>
+                        {% else %}
+                            <div class="w-full py-4 bg-slate-100 text-slate-400 rounded-2xl text-[10px] font-black tracking-widest text-center uppercase">
+                                En attente
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-span-full py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200">
+                    <p class="text-slate-400 font-bold">Aucune échéance générée pour le moment.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
