@@ -92,8 +92,8 @@ class Bien
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column]
-    private ?int $viewsCount = null;
+    #[ORM\Column(options: ["default" => 0])]
+    private int $viewsCount = 0;
 
     public function __construct()
     {
