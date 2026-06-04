@@ -89,7 +89,7 @@
                         <div class="premium-card p-4 bg-white border-l-4 border-amber-500">
                             <div class="flex justify-between items-start mb-2">
                                 <span class="px-2 py-1 bg-amber-50 text-amber-600 rounded text-[9px] font-black uppercase">Contrat</span>
-                                <span class="text-[10px] text-amber-600 font-black">{{ trans.montant|number_format(0, ',', ' ') }} GNF</span>
+                                <span class="text-[10px] text-amber-600 font-black">{{ trans.bien.prix|number_format(0, ',', ' ') }} GNF</span>
                             </div>
                             <h4 class="font-bold text-slate-900 text-sm mb-1">{{ trans.client.name|default('Anonyme') }}</h4>
                             <p class="text-xs text-slate-500 truncate">{{ trans.bien.titre }}</p>
