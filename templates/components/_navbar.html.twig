@@ -60,13 +60,7 @@
                     <span>Leads</span>
                 </a>
 
-                {# Locations (Agent/Admin) #}
-                <a href="{{ path('transactions.index', {type: 'location'}) }}"
-                   class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all
-                          {{ 'transactions' in route and app.request.query.get('type') == 'location' ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
-                    <i class="fa-solid fa-key text-xs"></i>
-                    <span>Locations</span>
-                </a>
+
 
                 {# Entretien #}
                 <a href="{{ path('expenses.index') }}"
