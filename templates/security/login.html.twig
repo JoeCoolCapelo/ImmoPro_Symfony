@@ -224,10 +224,16 @@
                         <input type="password"
                                name="password"
                                id="inputPassword"
-                               class="input-field"
+                               class="input-field pr-12"
                                autocomplete="current-password"
                                required
                                placeholder="••••••••">
+                        <button type="button" 
+                                onclick="const input = document.getElementById('inputPassword'); const icon = this.querySelector('i'); if(input.type === 'password') { input.type = 'text'; icon.classList.remove('fa-eye'); icon.classList.add('fa-eye-slash'); } else { input.type = 'password'; icon.classList.remove('fa-eye-slash'); icon.classList.add('fa-eye'); }"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-slate-400 hover:text-indigo-500 transition-colors focus:outline-none"
+                                title="Afficher/Masquer le mot de passe">
+                            <i class="fa-solid fa-eye text-sm"></i>
+                        </button>
                     </div>
                 </div>
 
