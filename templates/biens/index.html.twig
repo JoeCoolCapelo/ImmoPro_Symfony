@@ -121,9 +121,9 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="mt-12 flex justify-center">
+                <div class="mt-12">
                     {% if biens is iterable and biens.pageCount is defined %}
-                        {{ knp_pagination_render(biens) }}
+                        {{ knp_pagination_render(biens, '@KnpPaginator/Pagination/sliding.html.twig') }}
                     {% endif %}
                 </div>
             </div>
