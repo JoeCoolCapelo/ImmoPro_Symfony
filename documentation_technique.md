@@ -28,27 +28,39 @@ Pour travailler sur le projet, vous devez le faire tourner "en local" sur votre 
 3. **Node.js** : Un logiciel qui gère le design (Tailwind CSS).
 
 ### Option A : Installation de la version Symfony
-1. **Télécharger le code** : `git clone https://github.com/JoeCoolCapelo/ImmoPro_Symfony.git`
-2. **Télécharger les bibliothèques** : Tapez `composer install` dans votre terminal.
-3. **Connecter la base de données** : 
+1. **Ouvrir le terminal au bon endroit** :
+   Pour lancer les commandes Symfony, vous devez d'abord vous placer dans le dossier racine du projet Symfony.
+   *Si vous utilisez WAMP sur Windows, tapez dans votre terminal :*
+   ```bash
+   cd c:\wamp64\www\ImmPro\symfony
+   ```
+2. **Télécharger le code (si ce n'est pas déjà fait)** : `git clone https://github.com/JoeCoolCapelo/ImmoPro_Symfony.git .`
+3. **Télécharger les bibliothèques** : Tapez `composer install` dans votre terminal.
+4. **Connecter la base de données** : 
    - Créez un fichier `.env.local` (en copiant le `.env`).
    - Modifiez la ligne `DATABASE_URL` pour y mettre vos identifiants WAMP.
-4. **Créer les tables et les données de test** :
+5. **Créer les tables et les données de test** :
    ```bash
    php bin/console doctrine:database:create
    php bin/console doctrine:migrations:migrate
    ```
-5. **Allumer le serveur** : `symfony server:start`. Le site sera visible sur `http://localhost:8000`.
+6. **Allumer le serveur** : `symfony server:start`. Le site sera visible sur `http://localhost:8000`.
 
 ### Option B : Installation de la version Laravel
-1. **Télécharger le code** : `git clone https://github.com/JoeCoolCapelo/ImmoPro_laravel.git`
-2. **Télécharger les bibliothèques** : Tapez `composer install` et `npm install`.
-3. **Connecter la base de données** : 
+1. **Ouvrir le terminal au bon endroit** :
+   Pour lancer les commandes Laravel, vous devez d'abord vous placer dans le dossier racine du projet Laravel.
+   *Si vous utilisez WAMP sur Windows, tapez dans votre terminal :*
+   ```bash
+   cd c:\wamp64\www\ImmPro\laravel
+   ```
+2. **Télécharger le code (si ce n'est pas déjà fait)** : `git clone https://github.com/JoeCoolCapelo/ImmoPro_laravel.git .`
+3. **Télécharger les bibliothèques** : Tapez `composer install` et `npm install`.
+4. **Connecter la base de données** : 
    - Copiez le fichier `.env.example` et renommez-le en `.env`.
    - Modifiez `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.
    - Tapez `php artisan key:generate`.
-4. **Créer les tables** : `php artisan migrate`.
-5. **Allumer le serveur** : Tapez `php artisan serve` et dans un autre terminal `npm run dev`.
+5. **Créer les tables** : `php artisan migrate`.
+6. **Allumer le serveur** : Tapez `php artisan serve` et dans un autre terminal `npm run dev`.
 
 ---
 
