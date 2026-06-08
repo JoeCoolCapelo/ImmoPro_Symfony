@@ -1,0 +1,435 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-dark pt-12 pb-24 relative overflow-hidden">
+        <!-- Photo Background -->
+        <div class="absolute inset-0 z-0 opacity-20">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+        </div>
+        <!-- Abstract accents on top -->
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-premium/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3"></div>
+        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <p data-aos="fade-down" class="text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-2">{{ 'now'|date('l, d F Y') }}</p>
+            <h2 data-aos="fade-up" data-aos-delay="100" class="font-serif text-3xl md:text-5xl text-white leading-tight">
+                Bienvenue, <br><span class="font-sans font-black tracking-tighter">{{ app.user.name|default('Admin') }}</span>
+            </h2>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 bg-slate-50 min-h-screen -mt-16 relative z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {# Stats Grid for Admin #}
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                <div data-aos="fade-up" data-aos-delay="200" class="premium-card p-6 bg-dark text-white relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fa-solid fa-chart-line text-6xl"></i>
+                    </div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 relative z-10">Chiffre d'Affaires Global</p>
+                    <p class="text-2xl font-black text-white relative z-10">{{ stats.total_volume|default(0)|number_format(0, ',', ' ') }} <small class="text-[10px] text-gold">GNF</small></p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="300" class="premium-card p-6 bg-gradient-to-br from-premium to-blue-800 text-white relative overflow-hidden shadow-xl shadow-premium/20">
+                    <p class="text-[9px] font-black text-blue-200 uppercase tracking-widest mb-2">Revenu Réel Agence</p>
+                    <p class="text-2xl font-black">{{ stats.total_commissions|default(0)|number_format(0, ',', ' ') }} <small class="text-[10px]">GNF</small></p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="400" class="premium-card p-6 bg-white relative overflow-hidden group">
+                    <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-premium mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Activité Visites</p>
+                    <p class="text-2xl font-black text-dark">{{ stats.total_visites|default(0) }}</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="500" class="premium-card p-6 bg-white relative overflow-hidden group">
+                    <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-premium mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Base Utilisateurs</p>
+                    <p class="text-2xl font-black text-dark">{{ stats.total_users|default(0) }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Stats Grid for Agent #}
+        {% if is_granted('ROLE_AGENT') and not is_granted('ROLE_ADMIN') %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div data-aos="fade-up" data-aos-delay="200" class="premium-card p-6 bg-dark text-white relative overflow-hidden group">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Commissions (Ventes)</p>
+                    <p class="text-2xl font-black">{{ stats.commissions_vente|default(0)|number_format(0, ',', ' ') }} <span class="text-[10px] text-gold">GNF</span></p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="300" class="premium-card p-6 bg-white relative overflow-hidden group">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Taux de Conversion</p>
+                    <p class="text-3xl font-black text-dark">{{ stats.conversion_rate|default(0) }}%</p>
+                    <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden mt-3">
+                        <div class="h-full bg-premium rounded-full" style="width: {{ stats.conversion_rate|default(0) }}%"></div>
+                    </div>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="400" class="premium-card p-6 bg-white relative overflow-hidden group">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Visites Effectuées</p>
+                    <p class="text-3xl font-black text-dark">{{ stats.visites_effectuees|default(0) }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Stats Grid for Propriétaire #}
+        {% if is_granted('ROLE_PROPRIETAIRE') and not is_granted('ROLE_ADMIN') %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div data-aos="fade-up" data-aos-delay="200" class="premium-card p-6 bg-dark text-white">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Revenus Totaux</p>
+                    <p class="text-2xl font-black">{{ stats.revenus_totaux|default(0)|number_format(0, ',', ' ') }} <span class="text-[10px] text-gold">GNF</span></p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="300" class="premium-card p-6 bg-white">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Revenu Net</p>
+                    <p class="text-2xl font-black text-emerald-600">{{ stats.revenu_net|default(0)|number_format(0, ',', ' ') }} <span class="text-[10px]">GNF</span></p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="400" class="premium-card p-6 bg-white">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Visites Reçues</p>
+                    <p class="text-3xl font-black text-dark">{{ stats.visites_recues|default(0) }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Stats Grid for Client #}
+        {% if is_granted('ROLE_CLIENT') and not is_granted('ROLE_ADMIN') %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div data-aos="fade-up" data-aos-delay="200" class="premium-card p-6 bg-dark text-white">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Visites Demandées</p>
+                    <p class="text-3xl font-black">{{ stats.visites_demandees|default(0) }}</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="300" class="premium-card p-6 bg-white">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Visites Confirmées</p>
+                    <p class="text-3xl font-black text-indigo-600">{{ stats.visites_confirmees|default(0) }}</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="400" class="premium-card p-6 bg-white">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Mes Favoris</p>
+                    <p class="text-3xl font-black text-dark">{{ stats.favoris_count|default(0) }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Graphical Stats Section #}
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_AGENT') or is_granted('ROLE_PROPRIETAIRE') %}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                <div data-aos="fade-right" data-aos-delay="400" class="premium-card p-8 bg-white">
+                    <div class="flex justify-between items-center mb-8 pb-4 border-b border-slate-50">
+                        <h3 class="font-black text-dark text-xs uppercase tracking-widest">
+                            <i class="fa-solid fa-chart-line text-premium mr-2"></i> Évolution Activité
+                        </h3>
+                    </div>
+                    <div class="h-[300px]">
+                        <canvas id="biensChart"></canvas>
+                    </div>
+                </div>
+                <div data-aos="fade-left" data-aos-delay="500" class="premium-card p-8 bg-white">
+                    <div class="flex justify-between items-center mb-8 pb-4 border-b border-slate-50">
+                        <h3 class="font-black text-dark text-xs uppercase tracking-widest">
+                            <i class="fa-solid fa-chart-bar text-gold mr-2"></i> Volume Financier
+                        </h3>
+                    </div>
+                    <div class="h-[300px]">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Chart.defaults.font.family = "'Inter', sans-serif";
+                    Chart.defaults.color = '#94a3b8';
+                    
+                    const chartLabels = {{ stats.chart_labels|default([])|json_encode|raw }};
+                    
+                    if (document.getElementById('biensChart') && chartLabels.length > 0) {
+                        new Chart(document.getElementById('biensChart'), {
+                            type: 'line',
+                            data: {
+                                labels: chartLabels,
+                                datasets: [{
+                                    label: 'Nouveaux Biens',
+                                    data: {{ stats.biens_chart|default([])|json_encode|raw }},
+                                    borderColor: '#2563EB',
+                                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                    borderWidth: 3,
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointBackgroundColor: '#ffffff',
+                                    pointBorderColor: '#2563EB',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    y: { border: { display: false }, grid: { color: '#f1f5f9' } },
+                                    x: { border: { display: false }, grid: { display: false } }
+                                }
+                            }
+                        });
+                    }
+
+                    if (document.getElementById('revenueChart') && chartLabels.length > 0) {
+                        new Chart(document.getElementById('revenueChart'), {
+                            type: 'bar',
+                            data: {
+                                labels: chartLabels,
+                                datasets: [{
+                                    label: 'Revenu',
+                                    data: {{ stats.transactions_chart|default([])|json_encode|raw }},
+                                    backgroundColor: '#0F172A',
+                                    borderRadius: 6,
+                                    barPercentage: 0.6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    y: { border: { display: false }, grid: { color: '#f1f5f9' } },
+                                    x: { border: { display: false }, grid: { display: false } }
+                                }
+                            }
+                        });
+                    }
+                });
+            </script>
+        {% endif %}
+
+        {# Administration des biens en attente (Admin uniquement) #}
+        {% if is_granted('ROLE_ADMIN') and stats.biens_en_attente_list is defined and stats.biens_en_attente_list|length > 0 %}
+            <div data-aos="fade-up" class="premium-card p-8 bg-white mb-10 border-l-4 border-amber-500">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-slate-100">
+                    <div>
+                        <h3 class="font-serif text-2xl text-dark">
+                            Biens en <span class="italic text-amber-500">Attente de Validation</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 font-bold mt-1">Vous avez {{ stats.biens_en_attente_list|length }} bien(s) à valider et à assigner.</p>
+                    </div>
+                    
+                    {# Bouton Tout Accepter avec assignation #}
+                    <form method="POST" action="{{ path('biens.publier_tout') }}" class="flex items-center gap-2">
+                        <select name="agent_id" required class="rounded-xl border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-0 text-xs font-bold text-slate-700 py-2.5">
+                            <option value="">-- Assigner Agent Commun --</option>
+                            {% for agent in stats.agents %}
+                                <option value="{{ agent.id }}">{{ agent.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="px-4 py-2.5 bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-600 transition flex items-center gap-2">
+                            <i class="fa-solid fa-check-double"></i> Tout Accepter
+                        </button>
+                    </form>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for bien in stats.biens_en_attente_list %}
+                        <div class="flex flex-col bg-slate-50 rounded-2xl border border-slate-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+                            <div class="h-40 relative">
+                                <img src="{{ bien.image ? asset(bien.image) : 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600' }}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                                <span class="absolute top-3 left-3 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md text-white border border-white/20">
+                                    {{ bien.nature == 'vente' ? 'Vente' : 'Location' }}
+                                </span>
+                                <div class="absolute bottom-3 left-3 text-white">
+                                    <h4 class="font-serif text-sm font-bold truncate max-w-[200px]">{{ bien.titre }}</h4>
+                                    <p class="text-[9px] text-white/80 font-bold"><i class="fa-solid fa-location-dot mr-1"></i> {{ bien.ville }}</p>
+                                </div>
+                            </div>
+                            <div class="p-4 flex-1 flex flex-col justify-between">
+                                <div class="mb-4">
+                                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Soumis par :</p>
+                                    <p class="text-xs font-black text-slate-700">{{ bien.owner.name|default('Inconnu') }}</p>
+                                    <p class="text-xs font-bold text-indigo-600 mt-1">{{ bien.prix|number_format(0, ',', ' ') }} GNF</p>
+                                </div>
+                                
+                                {# Formulaire individuel d'acceptation et assignation #}
+                                <form method="POST" action="{{ path('biens.publier', {id: bien.id}) }}" class="space-y-2 pt-2 border-t border-slate-100">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('publish'~bien.id) }}">
+                                    <select name="agent_id" required class="block w-full rounded-xl border-slate-200 bg-white focus:border-indigo-500 focus:ring-0 text-[10px] font-bold text-slate-700 py-2">
+                                        <option value="">-- Assigner Agent --</option>
+                                        {% for agent in stats.agents %}
+                                            <option value="{{ agent.id }}">{{ agent.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="flex gap-2">
+                                        <button type="submit" class="flex-1 py-2 bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-wider hover:bg-emerald-600 transition flex items-center justify-center gap-1">
+                                            <i class="fa-solid fa-check"></i> Valider
+                                        </button>
+                                        <a href="{{ path('biens.show', {id: bien.id}) }}" class="px-3 py-2 bg-slate-200 text-slate-700 rounded-xl text-[9px] font-black uppercase tracking-wider hover:bg-slate-300 transition flex items-center justify-center">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {# Quick Actions by Role #}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                {# Catalogue - visible par tous #}
+                <a href="{{ path('biens.index') }}" data-aos="fade-up" data-aos-delay="600" class="premium-card p-6 flex flex-col group relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-slate-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out"></div>
+                    <div class="w-12 h-12 bg-white shadow-sm border border-slate-100 text-premium rounded-2xl flex items-center justify-center mb-6 relative z-10 group-hover:bg-premium group-hover:text-white transition-colors duration-300">
+                        <i class="fa-solid fa-house-chimney text-xl"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <h4 class="font-black text-dark text-lg mb-1">Catalogue</h4>
+                        <p class="text-xs text-slate-500 font-medium">
+                            {% if is_granted('ROLE_PROPRIETAIRE') %}Mes biens immobiliers.{% elseif is_granted('ROLE_CLIENT') %}Explorer les biens disponibles.{% else %}Gérer les annonces de l'agence.{% endif %}
+                        </p>
+                    </div>
+                </a>
+
+                {# Visites - visible par tous les connectés #}
+                <a href="{{ path('visites.index') }}" data-aos="fade-up" data-aos-delay="700" class="premium-card p-6 flex flex-col group relative overflow-hidden">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-slate-50 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out"></div>
+                    <div class="w-12 h-12 bg-white shadow-sm border border-slate-100 text-gold rounded-2xl flex items-center justify-center mb-6 relative z-10 group-hover:bg-gold group-hover:text-white transition-colors duration-300">
+                        <i class="fa-solid fa-calendar-check text-xl"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <h4 class="font-black text-dark text-lg mb-1">Visites</h4>
+                        <p class="text-xs text-slate-500 font-medium">
+                            {% if is_granted('ROLE_CLIENT') %}Mes demandes de rendez-vous.{% elseif is_granted('ROLE_PROPRIETAIRE') %}Visites planifiées sur mes biens.{% else %}Planning et confirmations.{% endif %}
+                        </p>
+                    </div>
+                </a>
+
+                {# Transactions - Agent, Proprio, Client #}
+                {% if is_granted('TRANSACTION_VIEW_ANY') %}
+                    <a href="{{ path('transactions.index') }}" data-aos="fade-up" data-aos-delay="800" class="premium-card p-6 flex items-start group">
+                        <div class="p-4 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-file-invoice-dollar text-2xl"></i>
+                        </div>
+                        <div class="ms-4">
+                            <h4 class="font-bold text-slate-900">Transactions</h4>
+                            <p class="text-sm text-slate-500 mt-1">
+                                {% if is_granted('ROLE_CLIENT') %}Mes achats et locations.{% elseif is_granted('ROLE_PROPRIETAIRE') %}Historique de mes ventes/locations.{% else %}Gérer les dossiers financiers.{% endif %}
+                            </p>
+                        </div>
+                    </a>
+                {% endif %}
+
+                {# CRM Pipeline - Agent & Admin #}
+                {% if is_granted('ROLE_AGENT') %}
+                    <a href="{{ path('admin.crm.index') }}" data-aos="fade-up" data-aos-delay="850" class="premium-card p-6 flex items-start group">
+                        <div class="p-4 bg-amber-50 text-amber-600 rounded-2xl group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-layer-group text-2xl"></i>
+                        </div>
+                        <div class="ms-4">
+                            <h4 class="font-bold text-slate-900">Pipeline CRM</h4>
+                            <p class="text-sm text-slate-500 mt-1">Gérer les prospects et leads.</p>
+                        </div>
+                    </a>
+                {% endif %}
+
+                {# Gestion des Locations - Agent & Admin #}
+                {% if is_granted('ROLE_AGENT') or is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('transactions.index', {type: 'location'}) }}" data-aos="fade-up" data-aos-delay="860" class="premium-card p-6 flex items-start group">
+                        <div class="p-4 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-key text-2xl"></i>
+                        </div>
+                        <div class="ms-4">
+                            <h4 class="font-bold text-slate-900">Gestion des Locations</h4>
+                            <p class="text-sm text-slate-500 mt-1">Suivi des loyers, échéances et libérations.</p>
+                        </div>
+                    </a>
+                {% endif %}
+
+                {# Actions Admin uniquement #}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('admin.users') }}" data-aos="fade-up" data-aos-delay="900" class="premium-card p-6 flex items-start group">
+                        <div class="p-4 bg-slate-900 text-white rounded-2xl group-hover:bg-indigo-600 transition-colors duration-300">
+                            <i class="fa-solid fa-users-gear text-2xl"></i>
+                        </div>
+                        <div class="ms-4">
+                            <h4 class="font-bold text-slate-900">Utilisateurs</h4>
+                            <p class="text-sm text-slate-500 mt-1">Gérer les comptes et rôles.</p>
+                        </div>
+                    </a>
+                    <a href="{{ path('expenses.index') }}" data-aos="fade-up" data-aos-delay="950" class="premium-card p-6 flex items-start group">
+                        <div class="p-4 bg-rose-50 text-rose-600 rounded-2xl group-hover:bg-rose-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-receipt text-2xl"></i>
+                        </div>
+                        <div class="ms-4">
+                            <h4 class="font-bold text-slate-900">Dépenses</h4>
+                            <p class="text-sm text-slate-500 mt-1">Charges liées aux biens.</p>
+                        </div>
+                    </a>
+                    <a href="{{ path('admin.broadcast') }}" data-aos="fade-up" data-aos-delay="1000" class="premium-card p-6 flex items-start group">
+                        <div class="p-4 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-paper-plane text-2xl"></i>
+                        </div>
+                        <div class="ms-4">
+                            <h4 class="font-bold text-slate-900">Diffusion</h4>
+                            <p class="text-sm text-slate-500 mt-1">Envoyer un message à tous.</p>
+                        </div>
+                    </a>
+                    <a href="{{ path('admin.reports') }}" data-aos="fade-up" data-aos-delay="1050" class="premium-card p-6 flex items-start group md:col-span-2">
+                        <div class="p-4 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-chart-line text-2xl"></i>
+                        </div>
+                        <div class="ms-4">
+                            <h4 class="font-bold text-slate-900">Reporting Financier</h4>
+                            <p class="text-sm text-slate-500 mt-1">Exporter les rapports (CSV).</p>
+                        </div>
+                    </a>
+                {% endif %}
+
+                {# Profil - visible par tous #}
+                <a href="{{ path('profile.edit') }}" data-aos="fade-up" data-aos-delay="1100" class="premium-card p-6 flex items-start group">
+                    <div class="p-4 bg-slate-100 text-slate-600 rounded-2xl group-hover:bg-slate-600 group-hover:text-white transition-colors duration-300">
+                        <i class="fa-solid fa-user-circle text-2xl"></i>
+                    </div>
+                    <div class="ms-4">
+                        <h4 class="font-bold text-slate-900">Mon Profil</h4>
+                        <p class="text-sm text-slate-500 mt-1">Paramètres et informations personnelles.</p>
+                    </div>
+                </a>
+
+            </div>
+
+            {% if is_granted('ROLE_AGENT') or is_granted('ROLE_ADMIN') %}
+                <div data-aos="fade-left" data-aos-delay="700" class="premium-card p-8 bg-white flex flex-col h-full">
+                    <h3 class="font-black text-dark text-xs uppercase tracking-widest mb-6 pb-4 border-b border-slate-50">
+                        <i class="fa-solid fa-list-check text-premium mr-2"></i> Tâches Prioritaires
+                    </h3>
+                    <div class="space-y-4 flex-1">
+                        {% for task in stats.mes_taches|default([]) %}
+                            <div data-aos="fade-up" data-aos-delay="{{ 700 + loop.index0 * 100 }}" class="group flex items-start p-3 bg-slate-50 rounded-2xl hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-slate-100 cursor-pointer">
+                                <div class="mt-1 w-4 h-4 rounded border-2 border-slate-300 flex-shrink-0 group-hover:border-premium transition-colors"></div>
+                                <div class="ml-3">
+                                    <p class="text-xs font-bold text-dark group-hover:text-premium transition-colors">{{ task.title }}</p>
+                                    <p class="text-[10px] text-slate-400 mt-1">{{ task.deadline|date('d/m/Y') }}</p>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="h-full flex flex-col items-center justify-center text-center py-6">
+                                <div class="w-12 h-12 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mb-3">
+                                    <i class="fa-solid fa-mug-hot"></i>
+                                </div>
+                                <p class="text-xs text-slate-400 font-bold">Aucune tâche en cours.</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Vous êtes à jour.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

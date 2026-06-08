@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue Immobilier - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-dark pt-16 pb-12 relative overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-10">
+            <div class="flex justify-between items-start mb-8">
+                <a href="{{ path('app_home') }}" class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 hover:scale-105 transition-all shadow-lg flex-shrink-0">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('biens.create') }}" class="btn-premium !bg-white !text-dark hover:!bg-gold hover:!text-white shadow-xl shadow-black/20 flex items-center">
+                    <i class="fa-solid fa-plus mr-2"></i> Nouveau Bien
+                </a>
+                {% endif %}
+            </div>
+            <div class="text-center">
+                <span data-aos="fade-down" class="inline-block px-4 py-1 bg-gold/20 text-gold rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-6 border border-gold/30">Catalogue Exclusif</span>
+                <h1 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-6xl font-serif text-white mb-4">Collection <span class="italic text-gold">Immobilière</span></h1>
+                <p data-aos="fade-up" data-aos-delay="200" class="text-slate-400 text-sm max-w-2xl mx-auto">Explorez notre sélection de propriétés haut de gamme, conçues pour répondre à vos exigences les plus strictes.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 bg-slate-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Sidebar Filters -->
+            <div data-aos="fade-right" data-aos-delay="300" class="lg:w-1/4">
+                <div class="premium-card p-6 sticky top-28 bg-white z-20">
+                    <h3 class="font-black text-sm uppercase tracking-widest mb-8 pb-4 border-b border-slate-50 text-dark">
+                        <i class="fa-solid fa-sliders text-premium mr-2"></i> Affiner la recherche
+                    </h3>
+                    
+                    <form action="{{ path('biens.index') }}" method="GET" class="space-y-6">
+                        <!-- Search term -->
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Mots-clés</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                                <input type="text" name="search" value="{{ app.request.query.get('search') }}" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-premium transition-all" placeholder="Titre, ville...">
+                            </div>
+                        </div>
+
+                        <!-- Nature -->
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Nature</label>
+                            <select name="nature" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-premium transition-all appearance-none">
+                                <option value="">Tous les types</option>
+                                <option value="Vente" {% if app.request.query.get('nature') == 'Vente' %}selected{% endif %}>Vente</option>
+                                <option value="Location" {% if app.request.query.get('nature') == 'Location' %}selected{% endif %}>Location</option>
+                            </select>
+                        </div>
+
+                        <!-- Price Range (Simplified) -->
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Budget Max (GNF)</label>
+                            <input type="number" name="max_price" value="{{ app.request.query.get('max_price') }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-premium transition-all" placeholder="Ex: 500000000">
+                        </div>
+
+                        {% if is_granted('ROLE_PROPRIETAIRE') or is_granted('ROLE_AGENT') or is_granted('ROLE_ADMIN') %}
+                        <!-- Statut -->
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Statut du Bien</label>
+                            <select name="statut" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-premium transition-all appearance-none">
+                                <option value="">Tous les statuts</option>
+                                <option value="publié" {% if app.request.query.get('statut') == 'publié' %}selected{% endif %}>En ligne (Publié)</option>
+                                <option value="suspendu" {% if app.request.query.get('statut') == 'suspendu' %}selected{% endif %}>Suspendu</option>
+                                <option value="en_attente" {% if app.request.query.get('statut') == 'en_attente' %}selected{% endif %}>En attente de validation</option>
+                                <option value="loué" {% if app.request.query.get('statut') == 'loué' %}selected{% endif %}>Loué</option>
+                                <option value="vendu" {% if app.request.query.get('statut') == 'vendu' %}selected{% endif %}>Vendu</option>
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        <button type="submit" class="btn-premium w-full mt-4">
+                            Appliquer
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="lg:w-3/4">
+                <div class="flex justify-between items-center mb-8">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        <span class="text-premium">{{ biens.getTotalItemCount|default(biens|length) }}</span> propriétés trouvées
+                    </p>
+                    <!-- Sort Dropdown placeholder -->
+                    <select class="bg-white border border-slate-200 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600 focus:outline-none">
+                        <option>Plus récents</option>
+                        <option>Prix croissant</option>
+                        <option>Prix décroissant</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {% for bien in biens %}
+                        <div data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                            {% include 'components/_property_card.html.twig' with {'bien': bien} %}
+                        </div>
+                    {% else %}
+                        <div class="col-span-full py-24 text-center bg-white rounded-[2rem] border border-slate-100 shadow-sm">
+                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fa-solid fa-house-crack text-3xl text-slate-300"></i>
+                            </div>
+                            <h3 class="font-serif text-2xl text-dark mb-2">Aucun résultat</h3>
+                            <p class="text-sm text-slate-500">Essayez de modifier vos critères de recherche.</p>
+                            <a href="{{ path('biens.index') }}" class="inline-block mt-6 text-[10px] font-black uppercase tracking-widest text-premium border-b border-premium pb-1">Réinitialiser les filtres</a>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-12">
+                    {% if biens is iterable and biens.pageCount is defined %}
+                        {{ knp_pagination_render(biens, '@KnpPaginator/Pagination/sliding.html.twig') }}
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

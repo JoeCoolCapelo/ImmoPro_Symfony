@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Diffusion de Messages - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-dark pt-12 pb-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h2 class="font-serif text-3xl md:text-5xl text-white leading-tight">
+                        Diffusion de <span class="italic text-indigo-400">Messages</span>
+                    </h2>
+                    <p class="text-slate-400 mt-2 text-sm">Envoyez des annonces groupées à vos utilisateurs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 bg-slate-50 min-h-screen -mt-16 relative z-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Flash Messages -->
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="mb-6 p-4 rounded-xl {% if label == 'success' %}bg-emerald-50 text-emerald-700 border border-emerald-200{% else %}bg-rose-50 text-rose-700 border border-rose-200{% endif %} flex items-center shadow-sm">
+                    <i class="fa-solid {% if label == 'success' %}fa-check-circle text-emerald-500{% else %}fa-circle-exclamation text-rose-500{% endif %} mr-3 text-lg"></i>
+                    <span class="font-bold text-sm">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="premium-card bg-white p-10 shadow-xl shadow-slate-200/50">
+            <div class="mb-8 pb-4 border-b border-slate-50">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest"><i class="fa-solid fa-bullhorn text-indigo-600 mr-2"></i> Nouvelle Annonce (Broadcast)</h3>
+            </div>
+
+            <form action="{{ path('admin.broadcast.store') }}" method="POST">
+                <input type="hidden" name="_token" value="{{ csrf_token('broadcast') }}">
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Cible du message *</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <label class="relative flex items-center justify-center p-3 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all has-[:checked]:bg-indigo-600 has-[:checked]:text-white text-slate-700">
+                                <input type="radio" name="target" value="all" checked class="hidden">
+                                <span class="text-xs font-bold">Tous</span>
+                            </label>
+                            <label class="relative flex items-center justify-center p-3 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all has-[:checked]:bg-indigo-600 has-[:checked]:text-white text-slate-700">
+                                <input type="radio" name="target" value="ROLE_AGENT" class="hidden">
+                                <span class="text-xs font-bold">Agents</span>
+                            </label>
+                            <label class="relative flex items-center justify-center p-3 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all has-[:checked]:bg-indigo-600 has-[:checked]:text-white text-slate-700">
+                                <input type="radio" name="target" value="ROLE_PROPRIETAIRE" class="hidden">
+                                <span class="text-xs font-bold">Proprios</span>
+                            </label>
+                            <label class="relative flex items-center justify-center p-3 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all has-[:checked]:bg-indigo-600 has-[:checked]:text-white text-slate-700">
+                                <input type="radio" name="target" value="ROLE_CLIENT" class="hidden">
+                                <span class="text-xs font-bold">Clients</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Sujet de l'email *</label>
+                        <input type="text" name="subject" required placeholder="Ex: Grande promotion d'été sur les villas..." 
+                            class="w-full bg-slate-50 border-slate-200 rounded-2xl py-4 px-6 text-sm font-bold text-slate-700 focus:outline-none focus:border-indigo-500 transition-all shadow-sm">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Message *</label>
+                        <textarea name="message" rows="8" required placeholder="Rédigez votre annonce ici..." 
+                            class="w-full bg-slate-50 border-slate-200 rounded-2xl py-4 px-6 text-sm font-bold text-slate-700 focus:outline-none focus:border-indigo-500 transition-all shadow-sm resize-y"></textarea>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="submit" class="btn-premium w-full py-4 text-sm flex items-center justify-center !bg-indigo-600 hover:!bg-indigo-700">
+                            <i class="fa-solid fa-paper-plane mr-3 text-lg"></i> Envoyer la campagne de diffusion
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="mt-8 bg-amber-50 border border-amber-100 rounded-2xl p-6 flex items-start shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-1 mr-4 text-xl"></i>
+            <div class="text-xs text-amber-700 font-medium leading-relaxed">
+                <strong>Attention :</strong> Ce message sera envoyé par email (ou messagerie interne) à tous les utilisateurs sélectionnés. Assurez-vous du contenu avant de valider l'envoi. Cette action est irréversible.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

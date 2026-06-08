@@ -1,0 +1,313 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rapports & Statistiques - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex justify-between items-center no-print">
+        <h2 class="font-black text-xl text-white leading-tight">
+            Rapports & Statistiques
+        </h2>
+        <div class="flex items-center gap-3">
+            <a href="{{ path('admin.transactions.export_csv') }}" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                <i class="fa-solid fa-file-csv mr-2"></i> Exporter CSV
+            </a>
+            <button onclick="window.print()" class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                <i class="fa-solid fa-file-pdf mr-2"></i> Générer en PDF
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-8 bg-slate-50/50 min-h-screen print-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        
+        {# Printable Header (hidden on screen, visible on print) #}
+        <div class="hidden print:block text-center pb-8 border-b border-slate-100">
+            <h1 class="font-black text-2xl text-slate-900 tracking-tight">{{ global_settings.agency_name|default('ImmoPro Premium') }}</h1>
+            <p class="text-xs text-slate-400 mt-1 uppercase tracking-widest font-black">Rapport Statistique Financier et Opérationnel</p>
+            <p class="text-[10px] text-slate-400 mt-3">Généré le {{ "now"|date("d/m/Y à H:i") }}</p>
+        </div>
+
+        {# Metric KPI Grid #}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {# Total Sales / Rent Vol #}
+            <div class="premium-card bg-white p-6 print-card">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Volume Transactions</span>
+                    <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <i class="fa-solid fa-chart-pie text-sm"></i>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">
+                        {{ total_sales|number_format(0, ',', ' ') }} <span class="text-xs text-slate-400">GNF</span>
+                    </h3>
+                    <p class="text-[10px] text-emerald-500 font-bold mt-1">
+                        <i class="fa-solid fa-arrow-trend-up mr-1"></i> +12.4% ce mois
+                    </p>
+                </div>
+            </div>
+
+            {# Agency Commission Revenue #}
+            <div class="premium-card bg-white p-6 print-card">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Chiffre d'Affaires</span>
+                    <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <i class="fa-solid fa-wallet text-sm"></i>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">
+                        {{ total_commissions|number_format(0, ',', ' ') }} <span class="text-xs text-slate-400">GNF</span>
+                    </h3>
+                    <p class="text-[10px] text-emerald-500 font-bold mt-1">
+                        <i class="fa-solid fa-arrow-trend-up mr-1"></i> Commission moyenne : 10%
+                    </p>
+                </div>
+            </div>
+
+            {# Active Listings #}
+            <div class="premium-card bg-white p-6 print-card">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Biens Actifs</span>
+                    <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <i class="fa-solid fa-house-circle-check text-sm"></i>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">
+                        {{ active_biens }} <span class="text-xs text-slate-400">Biens</span>
+                    </h3>
+                    <p class="text-[10px] text-slate-400 mt-1">
+                        Disponibles dans le catalogue
+                    </p>
+                </div>
+            </div>
+
+            {# Total Visits #}
+            <div class="premium-card bg-white p-6 print-card">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Activités Visites</span>
+                    <span class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                        <i class="fa-solid fa-calendar-days text-sm"></i>
+                    </span>
+                </div>
+                <div class="mt-4">
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">
+                        {{ total_visites }} <span class="text-xs text-slate-400">Rendez-vous</span>
+                    </h3>
+                    <p class="text-[10px] text-indigo-500 font-bold mt-1">
+                        En attente ou effectuées
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        {# Charts Section #}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {# Line Chart: Revenue Evolution #}
+            <div class="premium-card bg-white p-6 lg:col-span-3 print-card">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Évolution des Commissions Mensuelles</h3>
+                <div class="h-80 relative w-full">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            {# Doughnut Chart: Ventes vs Locations #}
+            <div class="premium-card bg-white p-6 lg:col-span-1 print-card">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Répartition des Transactions</h3>
+                <div class="h-64 relative w-full flex items-center justify-center">
+                    <canvas id="typeChart"></canvas>
+                </div>
+                <div class="mt-6 flex justify-around text-center border-t border-slate-50 pt-4">
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ventes</span>
+                        <p class="text-sm font-black text-slate-800 mt-0.5">{{ sales_count }}</p>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Locations</span>
+                        <p class="text-sm font-black text-slate-800 mt-0.5">{{ rentals_count }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {# Doughnut Chart: Types de Biens #}
+            <div class="premium-card bg-white p-6 lg:col-span-2 print-card">
+                <h3 class="text-xs font-black text-slate-900 uppercase tracking-widest mb-6">Répartition par Type de Bien</h3>
+                <div class="h-64 relative w-full flex items-center justify-center">
+                    <canvas id="propertyTypeChart"></canvas>
+                </div>
+                <div class="mt-6 flex justify-center gap-6 text-center border-t border-slate-50 pt-4" id="propertyTypeLegend">
+                    {# Legend injected by JS #}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<style>
+/* Custom Print Styles */
+@media print {
+    body {
+        background-color: white !important;
+        color: #000000 !important;
+    }
+    nav, footer, .no-print, [x-data] button {
+        display: none !important;
+    }
+    .print-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+    }
+    .print-card {
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: none !important;
+        background-color: white !important;
+        page-break-inside: avoid;
+        border-radius: 1rem !important;
+        padding: 1.5rem !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Line Chart: Revenue Evolution
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const revenueGradient = revenueCtx.createLinearGradient(0, 0, 0, 300);
+    revenueGradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
+    revenueGradient.addColorStop(1, 'rgba(79, 70, 229, 0.0)');
+
+    const revenueData = {{ revenue_data|raw }};
+
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'],
+            datasets: [{
+                label: 'Commissions Reçues (GNF)',
+                data: revenueData,
+                borderColor: '#4f46e5',
+                borderWidth: 3,
+                fill: true,
+                backgroundColor: revenueGradient,
+                tension: 0.4,
+                pointBackgroundColor: '#4f46e5',
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    grid: { color: '#f1f5f9' },
+                    ticks: {
+                        color: '#94a3b8',
+                        font: { family: 'Inter', weight: 'bold', size: 9 },
+                        callback: function(value) {
+                            return value.toLocaleString() + ' GNF';
+                        }
+                    }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        color: '#94a3b8',
+                        font: { family: 'Inter', weight: 'bold', size: 9 }
+                    }
+                }
+            }
+        }
+    });
+
+    // 2. Doughnut Chart: Ventes vs Locations
+    const typeCtx = document.getElementById('typeChart').getContext('2d');
+    const salesCount = {{ sales_count }};
+    const rentalsCount = {{ rentals_count }};
+
+    new Chart(typeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Ventes', 'Locations'],
+            datasets: [{
+                data: [salesCount || 1, rentalsCount || 1], // fallback to 1 if empty to show pretty blank chart
+                backgroundColor: ['#4f46e5', '#10b981'],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#64748b',
+                        font: { family: 'Inter', weight: 'black', size: 10 },
+                        padding: 15
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // 3. Doughnut Chart: Types de Biens
+    const propertyTypeCtx = document.getElementById('propertyTypeChart').getContext('2d');
+    const propertyTypeData = {{ types_biens_count|raw }};
+    const propertyLabels = ['Maisons', 'Appartements', 'Terrains', 'Locaux', 'Autres'];
+    const propertyColors = ['#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#64748b'];
+
+    new Chart(propertyTypeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: propertyLabels,
+            datasets: [{
+                data: propertyTypeData.every(item => item === 0) ? [1, 1, 1, 1, 1] : propertyTypeData,
+                backgroundColor: propertyColors,
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false // We will build a custom HTML legend below
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // Build custom HTML legend for property types
+    const legendContainer = document.getElementById('propertyTypeLegend');
+    propertyLabels.forEach((label, index) => {
+        const count = propertyTypeData[index] || 0;
+        const color = propertyColors[index];
+        legendContainer.innerHTML += `
+            <div>
+                <span class="text-[10px] font-black uppercase tracking-widest" style="color: ${color}">${label}</span>
+                <p class="text-sm font-black text-slate-800 mt-0.5">${count}</p>
+            </div>
+        `;
+    });
+});
+</script>
+{% endblock %}

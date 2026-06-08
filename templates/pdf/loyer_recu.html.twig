@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reçu de Loyer</title>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; color: #333; line-height: 1.6; }
+        .header { text-align: center; border-bottom: 2px solid #4f46e5; padding-bottom: 20px; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: bold; color: #4f46e5; }
+        .title { font-size: 18px; margin-top: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .content { margin-bottom: 30px; }
+        .section { margin-bottom: 20px; }
+        .section-title { font-weight: bold; border-bottom: 1px solid #eee; margin-bottom: 10px; padding-bottom: 5px; color: #4f46e5; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eee; }
+        .total-box { background: #f9fafb; padding: 20px; border-radius: 10px; margin-top: 30px; }
+        .footer { text-align: center; font-size: 10px; color: #999; margin-top: 50px; }
+        .stamp { border: 3px solid #10b981; color: #10b981; padding: 10px; width: 150px; text-align: center; font-weight: bold; transform: rotate(-15deg); margin-left: auto; margin-right: 50px; opacity: 0.7; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">{{ settings.agency_name|default('ImmoPro') }}</div>
+        <div class="title">Reçu de Loyer Officiel</div>
+        <div style="font-size: 12px; color: #666;">Ref: #RL-{{ paiement.id|format("%06d") }}</div>
+    </div>
+
+    <div class="content">
+        <div style="float: right; text-align: right;">
+            <p><strong>Date :</strong> {{ paiement.datePaiement|date('d/m/Y') }}</p>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Informations Locataire</div>
+            <p>
+                <strong>Nom :</strong> {{ paiement.locataire.name }}<br>
+                <strong>Email :</strong> {{ paiement.locataire.email }}
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Détails du Bien</div>
+            <p>
+                <strong>Bien :</strong> {{ paiement.bien.titre }}<br>
+                <strong>Adresse :</strong> {{ paiement.bien.adresse }}, {{ paiement.bien.ville }}
+            </p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Objet du Paiement</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th style="text-align: right;">Montant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Loyer mensuel - {{ paiement.dateEcheance|date('F Y') }}</td>
+                        <td style="text-align: right;">{{ paiement.montantLoyer|number_format(0, ',', ' ') }} GNF</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total-box">
+            <table style="border: none;">
+                <tr>
+                    <td style="border: none; font-size: 18px; font-weight: bold;">TOTAL REÇU</td>
+                    <td style="border: none; font-size: 24px; font-weight: bold; text-align: right; color: #4f46e5;">{{ paiement.montantLoyer|number_format(0, ',', ' ') }} GNF</td>
+                </tr>
+            </table>
+        </div>
+
+        {% if paiement.statut == 'payé' %}
+            <div class="stamp">PAYÉ LE {{ paiement.datePaiement|date('d/m/Y') }}</div>
+        {% endif %}
+
+        <div style="margin-top: 40px;">
+            <div style="float: left; width: 50%;">
+                <p style="font-size: 12px; font-weight: bold;">Signature de l'Agent</p>
+                <div style="height: 60px;"></div>
+                <p style="font-size: 12px;">{{ paiement.agent.name }}</p>
+            </div>
+            <div style="float: right; width: 40%; text-align: center;">
+                <p style="font-size: 12px; font-weight: bold;">Cachet de l'Agence</p>
+                <div style="height: 80px; width: 80px; border: 2px dashed #ccc; margin: 10px auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 10px;">Cachet</div>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        {{ settings.agency_name|default('ImmoPro') }} - {{ settings.agency_address|default('Conakry, Guinée') }}<br>
+        Tél: {{ settings.agency_phone|default('+224 000 000 000') }} - Email: {{ settings.agency_email|default('contact@immopro.gn') }}<br>
+        Ce document sert de preuve de paiement pour la période indiquée.
+    </div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+classDiagram
+    class User {
+        +int id
+        +string email
+        +string password
+        +string name
+        +string phone
+        +string roles_or_type
+        +DateTime created_at
+    }
+
+    class Bien {
+        +int id
+        +string type
+        +string titre
+        +text description
+        +decimal surface
+        +decimal prix
+        +int nb_pieces
+        +string statut
+        +string nature
+        +int views_count
+    }
+
+    class BienImage {
+        +int id
+        +string path
+        +bool is_main
+    }
+
+    class Visite {
+        +int id
+        +DateTime date_visite
+        +string statut
+        +text commentaire
+        +text feedback_agent
+        +bool interested
+    }
+
+    class Transaction {
+        +int id
+        +string type
+        +decimal montant
+        +string statut
+        +decimal commission_montant
+        +DateTime date_transaction
+        +bool client_signed
+        +bool owner_signed
+        +bool agency_signed
+    }
+
+    class Document {
+        +int id
+        +string titre
+        +string type
+        +string path
+    }
+
+    class PaiementLoyer {
+        +int id
+        +decimal montant
+        +date periode_mois
+        +date periode_annee
+        +string statut
+        +string methode_paiement
+    }
+
+    class Expense {
+        +int id
+        +string titre
+        +decimal montant
+        +string categorie
+    }
+    
+    class Notification {
+        +int id
+        +string title
+        +string message
+        +bool is_read
+    }
+
+    %% Relations
+    User "1" -- "*" Bien : "owner"
+    User "1" -- "*" Bien : "agent"
+    Bien "1" *-- "*" BienImage : "images"
+    
+    User "1" -- "*" Visite : "client"
+    Bien "1" -- "*" Visite : "bien"
+    
+    Visite "1" -- "*" Transaction : "aboutit à"
+    User "1" -- "*" Transaction : "client"
+    User "1" -- "*" Transaction : "agent"
+    Bien "1" -- "*" Transaction : "concerne"
+    
+    Transaction "1" *-- "*" Document : "contrats"
+    Transaction "1" *-- "*" PaiementLoyer : "loyers (si location)"
+    
+    User "1" -- "*" Notification : "reçoit"

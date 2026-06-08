@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Finaliser la transaction - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <h2 class="font-black text-xl text-white leading-tight">
+            Finaliser la transaction
+        </h2>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 bg-slate-50/50 min-h-screen">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="premium-card bg-white p-10">
+            {{ form_start(form, {'attr': {'class': 'space-y-8', 'enctype': 'multipart/form-data', 'novalidate': 'novalidate'}}) }}
+                
+                {# Boîte d'erreurs premium #}
+                {% if not form.vars.valid %}
+                    <div class="p-6 bg-rose-50 text-rose-800 border border-rose-100 rounded-3xl flex flex-col gap-2">
+                        <div class="flex items-center text-sm font-black text-rose-700 uppercase tracking-widest mb-2">
+                            <i class="fa-solid fa-triangle-exclamation mr-2 text-rose-500"></i> Veuillez corriger les erreurs suivantes :
+                        </div>
+                        {{ form_errors(form) }}
+                        {% for child in form.children %}
+                            {% for error in child.vars.errors %}
+                                <p class="text-xs font-bold text-rose-600">• {{ child.vars.label|default(child.vars.name|capitalize) }} : {{ error.message }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {# Rendre les champs bien et visite cachés car ils sont déjà fixés dans la logique #}
+                <div class="hidden">
+                    {{ form_widget(form.bien) }}
+                    {{ form_widget(form.visite) }}
+                </div>
+
+                <div class="flex items-center justify-between p-6 bg-indigo-50/50 rounded-3xl border border-indigo-100">
+                    <div>
+                        <p class="text-xs font-black text-indigo-400 uppercase tracking-widest mb-1">Bien concerné</p>
+                        <h4 class="text-indigo-900 font-black">{{ bien ? bien.titre : 'Bien non défini' }}</h4>
+                    </div>
+                    {% if bien %}
+                    <div class="text-right">
+                        <p class="text-xs font-black text-indigo-400 uppercase tracking-widest mb-1">Prix affiché</p>
+                        <p class="text-indigo-900 font-black text-xl">{{ bien.prix|number_format(0, ',', ' ') }} <small>GNF</small></p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="md:col-span-2">
+                        {{ form_label(form.client, 'Client (Acheteur/Locataire)', {'label_attr': {'class': 'text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.client, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                        {{ form_errors(form.client) }}
+                    </div>
+
+                    <div>
+                        {% if bien and bien.nature == 'location' %}
+                            {{ form_label(form.montant, 'Loyer Mensuel final (GNF)', {'label_attr': {'class': 'text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                        {% else %}
+                            {{ form_label(form.montant, 'Montant final (GNF)', {'label_attr': {'class': 'text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                        {% endif %}
+                        {{ form_widget(form.montant, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                        {{ form_errors(form.montant) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.commissionPourcentage, 'Commission Agence (%)', {'label_attr': {'class': 'text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.commissionPourcentage, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                        {{ form_errors(form.commissionPourcentage) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.dateTransaction, 'Date de l\'acte', {'label_attr': {'class': 'text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.dateTransaction, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                        {{ form_errors(form.dateTransaction) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.documents, 'Documents joints', {'label_attr': {'class': 'text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.documents, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                        {{ form_errors(form.documents) }}
+                    </div>
+
+                    {% if bien and bien.nature == 'location' %}
+                        <div class="md:col-span-2 p-6 bg-emerald-50/50 border border-emerald-100 rounded-3xl space-y-6">
+                            <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-[9px] font-black uppercase tracking-widest">Options Locatives (Location uniquement)</span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    {{ form_label(form.typeLocationPaiement, 'Fréquence de Paiement Initial', {'label_attr': {'class': 'text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                                    {{ form_widget(form.typeLocationPaiement, {'attr': {'class': 'w-full bg-white border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                                    {{ form_errors(form.typeLocationPaiement) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.chequeAgent, 'Mode de Règlement', {'label_attr': {'class': 'text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                                    {{ form_widget(form.chequeAgent, {'attr': {'class': 'w-full bg-white border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                                    {{ form_errors(form.chequeAgent) }}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="hidden">
+                            {{ form_widget(form.typeLocationPaiement) }}
+                            {{ form_widget(form.chequeAgent) }}
+                        </div>
+                    {% endif %}
+
+                    <div class="md:col-span-2">
+                        {{ form_label(form.commentaire, 'Notes de la transaction', {'label_attr': {'class': 'text-xs font-black text-slate-400 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.commentaire, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500', 'rows': '4'}}) }}
+                        {{ form_errors(form.commentaire) }}
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-8 border-t border-slate-50">
+                    <button type="submit" class="px-10 py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-indigo-600 transition shadow-xl">
+                        Enregistrer et Finaliser
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

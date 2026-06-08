@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un nouveau bien - {{ global_settings.agency_name|default('ImmoPro') }}{% endblock %}
+
+{% block header %}
+    <div class="bg-dark pt-16 pb-12 relative overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2000" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-10">
+            <div class="flex items-center">
+                <a href="{{ path('biens.index') }}" class="mr-4 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 hover:scale-105 transition-all shadow-lg flex-shrink-0">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <h2 class="font-black text-3xl md:text-5xl text-white leading-tight">
+                    Ajouter un nouveau bien
+                </h2>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="py-12 bg-slate-50/50 min-h-screen">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="premium-card bg-white p-10 shadow-xl border border-slate-100">
+            {{ form_start(form, {'attr': {'class': 'space-y-8', 'enctype': 'multipart/form-data'}}) }}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="md:col-span-2">
+                        {{ form_label(form.titre, 'Titre de l\'annonce', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.titre, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                        {{ form_errors(form.titre) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.type, 'Type de bien', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.type, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.nature, 'Nature de la transaction', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.nature, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.prix, 'Prix (GNF)', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.prix, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.surface, 'Surface (m²)', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.surface, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.nbPieces, 'Nombre de pièces', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.nbPieces, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.ville, 'Ville', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.ville, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        {{ form_label(form.adresse, 'Adresse complète', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.adresse, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        {{ form_label(form.description, 'Description détaillée', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.description, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500', 'rows': '5'}}) }}
+                    </div>
+
+                    {# Map Picker #}
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-black text-slate-800 uppercase tracking-widest mb-4 block">Localisation sur la carte</label>
+                        <div id="map-picker" class="h-[400px] w-full rounded-[2rem] border border-slate-100 overflow-hidden shadow-inner bg-slate-50"></div>
+                        <p class="text-[10px] font-bold text-slate-400 mt-4 uppercase tracking-widest text-center">Cliquez sur la carte pour définir l'emplacement exact.</p>
+                        
+                        <div class="hidden">
+                            {{ form_widget(form.latitude, {'id': 'latitude'}) }}
+                            {{ form_widget(form.longitude, {'id': 'longitude'}) }}
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        {{ form_label(form.images, 'Photos du bien', {'label_attr': {'class': 'text-xs font-black text-slate-800 uppercase tracking-widest mb-2 block'}}) }}
+                        {{ form_widget(form.images, {'attr': {'class': 'w-full bg-slate-50 border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-700 focus:ring-indigo-500'}}) }}
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-8 border-t border-slate-50">
+                    <a href="{{ path('biens.index') }}" class="text-xs font-black text-slate-500 uppercase tracking-widest hover:text-slate-900 transition flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Annuler
+                    </a>
+                    <button type="submit" class="px-10 py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-indigo-600 transition shadow-xl">
+                        Enregistrer le bien
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+{# Leaflet Integration #}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const latInput = document.getElementById('latitude');
+        const lngInput = document.getElementById('longitude');
+        
+        const lat = latInput.value || 9.6412; 
+        const lng = lngInput.value || -13.5784;
+        
+        const map = L.map('map-picker').setView([lat, lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        let marker = L.marker([lat, lng], {draggable: true}).addTo(map);
+
+        function updateCoords(lat, lng) {
+            latInput.value = lat.toFixed(7);
+            lngInput.value = lng.toFixed(7);
+        }
+
+        map.on('click', function(e) {
+            const {lat, lng} = e.latlng;
+            marker.setLatLng([lat, lng]);
+            updateCoords(lat, lng);
+        });
+
+        marker.on('dragend', function(e) {
+            const {lat, lng} = e.target.getLatLng();
+            updateCoords(lat, lng);
+        });
+    });
+</script>
+{% endblock %}

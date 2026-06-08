@@ -1,0 +1,377 @@
+{% set route = app.request.attributes.get('_route') %}
+
+{% if app.user %}
+{# ===== AUTHENTICATED NAVBAR ===== #}
+<nav class="sticky top-0 bg-slate-900 border-b border-white/10 z-50 shadow-2xl" x-data="{ mobileOpen: false }">
+    <div class="max-w-[98%] mx-auto px-4 lg:px-6">
+        <div class="flex items-center justify-between h-14">
+
+            {# --- Logo --- #}
+            <a href="{{ path('app_home') }}" class="flex items-center gap-2.5 group flex-shrink-0">
+                <div class="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg group-hover:bg-indigo-500 transition-colors">
+                    <i class="fa-solid fa-building text-white text-sm"></i>
+                </div>
+                <span class="font-black text-white tracking-tight text-base hidden sm:block">
+                    {{ global_settings.agency_name|default('ImmoPro') }}
+                </span>
+            </a>
+
+            {# --- Desktop Nav --- #}
+            <div class="hidden lg:flex items-center gap-0.5 mx-4">
+
+                {# Tableau de bord #}
+                <a href="{{ path('app_home') }}"
+                   class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all
+                          {{ route == 'app_home' ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i class="fa-solid fa-gauge-high text-xs"></i>
+                    <span>Bord</span>
+                </a>
+
+                {# Catalogue #}
+                <a href="{{ path('biens.index') }}"
+                   class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all
+                          {{ 'biens' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i class="fa-solid fa-house text-xs"></i>
+                    <span>Biens</span>
+                </a>
+
+                {# Visites #}
+                <a href="{{ path('visites.index') }}"
+                   class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all
+                          {{ 'visites' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i class="fa-solid fa-calendar-check text-xs"></i>
+                    <span>Visites</span>
+                </a>
+
+                {# Transactions #}
+                <a href="{{ path('transactions.index') }}"
+                   class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all
+                          {{ 'transactions' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i class="fa-solid fa-receipt text-xs"></i>
+                    <span>Transactions</span>
+                </a>
+
+                {# Leads (Agent/Admin) #}
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_AGENT') %}
+                <a href="{{ path('admin.crm.index') }}"
+                   class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all
+                          {{ 'crm' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i class="fa-solid fa-chart-bar text-xs"></i>
+                    <span>Leads</span>
+                </a>
+
+
+
+                {# Entretien #}
+                <a href="{{ path('expenses.index') }}"
+                   class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all
+                          {{ 'expenses' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i class="fa-solid fa-screwdriver-wrench text-xs"></i>
+                    <span>Entretien</span>
+                </a>
+                {% endif %}
+
+                {# Gestion dropdown (Admin only) #}
+                {% if is_granted('ROLE_ADMIN') %}
+                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                    <button @click="open = !open"
+                            class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all
+                                   text-slate-400 hover:bg-white/5 hover:text-white focus:outline-none"
+                            :class="open ? 'bg-white/10 text-white' : ''">
+                        <i class="fa-solid fa-shield-halved text-xs"></i>
+                        <span>Admin</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                    </button>
+
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-1"
+                         style="display:none"
+                         class="absolute left-0 top-full mt-1.5 w-52 z-[100]">
+                        <div class="bg-slate-800 border border-white/10 rounded-xl shadow-2xl overflow-hidden py-1">
+                            <div class="px-3 py-2 border-b border-white/5 mb-1">
+                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Administration</p>
+                            </div>
+                            <a href="{{ path('admin.users') }}"
+                               class="flex items-center gap-3 px-3 py-2.5 text-[11px] font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                <span class="w-7 h-7 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-users text-xs"></i>
+                                </span>
+                                Utilisateurs
+                            </a>
+                            <a href="{{ path('documents.index') }}"
+                               class="flex items-center gap-3 px-3 py-2.5 text-[11px] font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                <span class="w-7 h-7 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-file-contract text-xs"></i>
+                                </span>
+                                Documents
+                            </a>
+                            <a href="{{ path('admin.reports') }}"
+                               class="flex items-center gap-3 px-3 py-2.5 text-[11px] font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                <span class="w-7 h-7 rounded-lg bg-amber-600/20 text-amber-400 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-chart-line text-xs"></i>
+                                </span>
+                                Rapports & Stats
+                            </a>
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                <a href="{{ path('admin.logs') }}"
+                                   class="flex items-center gap-3 px-3 py-2.5 text-[11px] font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                    <span class="w-7 h-7 rounded-lg bg-rose-600/20 text-rose-400 flex items-center justify-center flex-shrink-0">
+                                        <i class="fa-solid fa-list-check text-xs"></i>
+                                    </span>
+                                    Audit & Logs
+                                </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <a href="{{ path('admin.settings') }}"
+                               class="flex items-center gap-3 px-3 py-2.5 text-[11px] font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                <span class="w-7 h-7 rounded-lg bg-slate-600/30 text-slate-400 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-sliders text-xs"></i>
+                                </span>
+                                Paramètres
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+            {# --- Right Side --- #}
+            <div class="flex items-center gap-3">
+
+                {# Horloge temps réel #}
+                <div class="hidden lg:flex flex-col items-end px-3 py-1 bg-white/5 border border-white/10 rounded-xl select-none"
+                     x-data="{
+                         time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                         date: new Date().toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
+                     }"
+                     x-init="setInterval(() => {
+                         time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                         date = new Date().toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+                     }, 1000)">
+                    <span x-text="time" class="text-xs font-black tracking-widest font-mono text-white leading-none"></span>
+                    <span x-text="date" class="text-[9px] font-bold uppercase tracking-wider text-slate-400 leading-none mt-0.5"></span>
+                </div>
+
+                {# Notifications #}
+                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                    <button @click="open = !open"
+                            class="relative w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/20 transition-all focus:outline-none cursor-pointer shadow-md shadow-black/10">
+                        <i class="fa-solid fa-bell text-sm"></i>
+                        {% if app.user.unreadNotifications|length > 0 %}
+                            <span class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rose-500 ring-2 ring-slate-900 text-[10px] font-black text-white flex items-center justify-center animate-bounce">
+                                {{ app.user.unreadNotifications|length }}
+                            </span>
+                        {% endif %}
+                    </button>
+
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-1"
+                         style="display:none"
+                         class="absolute right-0 top-full mt-1.5 w-80 z-[100]">
+                        <div class="bg-slate-800 border border-white/10 rounded-xl shadow-2xl overflow-hidden py-1">
+                            <div class="px-3 py-2.5 border-b border-white/5 flex justify-between items-center">
+                                <p class="text-xs font-black text-white">Notifications</p>
+                                {% if app.user.unreadNotifications|length > 0 %}
+                                    <form action="{{ path('notifications.read_all') }}" method="POST">
+                                        <button type="submit" class="text-[9px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest">Tout marquer lu</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="max-h-60 overflow-y-auto divide-y divide-white/5">
+                                {% if app.user.unreadNotifications is empty %}
+                                    <div class="px-4 py-8 text-center text-slate-500">
+                                        <i class="fa-solid fa-bell-slash text-xl mb-2"></i>
+                                        <p class="text-[10px] font-bold">Aucune nouvelle notification</p>
+                                    </div>
+                                {% else %}
+                                    {% for notification in app.user.unreadNotifications|slice(0, 5) %}
+                                        <div class="px-3 py-3 hover:bg-white/5 transition-colors">
+                                            <div class="flex gap-2.5">
+                                                <div class="flex-shrink-0">
+                                                    {% if notification.type == 'visite' %}
+                                                        <span class="w-6 h-6 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center text-xs">
+                                                            <i class="fa-solid fa-calendar-check"></i>
+                                                        </span>
+                                                    {% elseif notification.type == 'transaction' %}
+                                                        <span class="w-6 h-6 rounded-lg bg-amber-600/20 text-amber-400 flex items-center justify-center text-xs">
+                                                            <i class="fa-solid fa-receipt"></i>
+                                                        </span>
+                                                    {% elseif notification.type == 'paiement' %}
+                                                        <span class="w-6 h-6 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center text-xs">
+                                                            <i class="fa-solid fa-wallet"></i>
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="w-6 h-6 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xs">
+                                                            <i class="fa-solid fa-bell"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="flex-grow min-w-0">
+                                                    <p class="text-[10px] font-black text-white truncate">{{ notification.title }}</p>
+                                                    <p class="text-[9px] text-slate-400 line-clamp-2 mt-0.5 leading-relaxed">{{ notification.message }}</p>
+                                                    <span class="text-[8px] text-slate-500 block mt-1">{{ notification.createdAt|date('d/m/Y H:i') }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <div class="border-t border-white/5 mt-1 pt-1">
+                                <a href="{{ path('notifications.index') }}"
+                                   class="flex items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest transition-colors">
+                                    Voir tout le centre
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Profile Dropdown #}
+                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                    <button @click="open = !open"
+                            class="h-9 w-9 rounded-full overflow-hidden flex items-center justify-center bg-indigo-600 text-white font-black text-xs shadow-inner ring-2 ring-white/10 hover:ring-indigo-500 hover:scale-105 active:scale-95 transition-all focus:outline-none cursor-pointer">
+                        {% if app.user.photoUrl %}
+                            <img src="{{ asset(app.user.photoUrl) }}" class="h-full w-full object-cover">
+                        {% else %}
+                            {{ app.user.name|slice(0,1)|upper }}
+                        {% endif %}
+                    </button>
+
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-1"
+                         style="display:none"
+                         class="absolute right-0 top-full mt-1.5 w-48 z-[100]">
+                        <div class="bg-slate-800 border border-white/10 rounded-xl shadow-2xl overflow-hidden py-1">
+                            <div class="px-3 py-2.5 border-b border-white/5">
+                                <p class="text-xs font-black text-white truncate">{{ app.user.name }}</p>
+                                <p class="text-[10px] text-slate-400 truncate mt-0.5">{{ app.user.email }}</p>
+                            </div>
+                            <a href="{{ path('profile.edit') }}"
+                               class="flex items-center gap-2.5 px-3 py-2.5 text-[11px] font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors">
+                                <i class="fa-solid fa-user-pen w-4 text-center text-slate-400"></i>
+                                Mon Profil
+                            </a>
+                            <div class="border-t border-white/5 mt-1 pt-1">
+                                <a href="{{ path('app_logout') }}"
+                                   class="flex items-center gap-2.5 px-3 py-2.5 text-[11px] font-bold text-rose-400 hover:bg-rose-500/10 transition-colors">
+                                    <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Mobile Toggle #}
+                <button class="lg:hidden w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+                        @click="mobileOpen = !mobileOpen">
+                    <i class="fa-solid text-sm" :class="mobileOpen ? 'fa-xmark' : 'fa-bars'"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    {# --- Mobile Menu --- #}
+    <div x-show="mobileOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         style="display:none"
+         class="lg:hidden border-t border-white/10 bg-slate-900 pb-4">
+        <div class="max-w-[98%] mx-auto px-4 pt-3 space-y-1">
+            <a href="{{ path('app_home') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold {{ route == 'app_home' ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }} transition-all">
+                <i class="fa-solid fa-gauge-high w-5 text-center"></i> Tableau de bord
+            </a>
+            <a href="{{ path('biens.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold {{ 'biens' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }} transition-all">
+                <i class="fa-solid fa-house w-5 text-center"></i> Biens
+            </a>
+            <a href="{{ path('visites.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold {{ 'visites' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }} transition-all">
+                <i class="fa-solid fa-calendar-check w-5 text-center"></i> Visites
+            </a>
+            <a href="{{ path('transactions.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold {{ 'transactions' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }} transition-all">
+                <i class="fa-solid fa-receipt w-5 text-center"></i> Transactions
+            </a>
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_AGENT') %}
+            <a href="{{ path('admin.crm.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold {{ 'crm' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }} transition-all">
+                <i class="fa-solid fa-chart-bar w-5 text-center"></i> Pipeline Leads
+            </a>
+            <a href="{{ path('expenses.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold {{ 'expenses' in route ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white' }} transition-all">
+                <i class="fa-solid fa-screwdriver-wrench w-5 text-center"></i> Entretien
+            </a>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="border-t border-white/5 pt-3 mt-3 space-y-1">
+                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest px-3 mb-2">Administration</p>
+                <a href="{{ path('admin.users') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <i class="fa-solid fa-users w-5 text-center"></i> Utilisateurs
+                </a>
+                <a href="{{ path('documents.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <i class="fa-solid fa-file-contract w-5 text-center"></i> Documents
+                </a>
+                {% if is_granted('ROLE_SUPER_ADMIN') %}
+                    <a href="{{ path('admin.logs') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                        <i class="fa-solid fa-list-check w-5 text-center"></i> Audit & Logs
+                    </a>
+                {% endif %}
+                <a href="{{ path('admin.settings') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <i class="fa-solid fa-sliders w-5 text-center"></i> Paramètres
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+{% else %}
+{# ===== PUBLIC NAVBAR ===== #}
+<nav class="sticky top-0 z-50 glass border-b border-slate-200/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-18">
+            <a href="{{ path('app_home') }}" class="group flex items-center gap-2.5">
+                <div class="w-9 h-9 bg-dark rounded-xl flex items-center justify-center group-hover:bg-indigo-600 transition-colors duration-300 shadow-md">
+                    <i class="fa-solid fa-building text-white text-sm"></i>
+                </div>
+                <div class="flex flex-col leading-none">
+                    <span class="text-lg font-serif font-black tracking-tight text-dark">ImmoPro</span>
+                    <span class="text-[8px] font-black uppercase tracking-[0.3em] text-gold">Premium</span>
+                </div>
+            </a>
+
+            <div class="hidden md:flex items-center gap-8">
+                <a href="{{ path('biens.index') }}" class="text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-colors">Catalogue</a>
+                <a href="{{ path('app_home') }}#membres" class="text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-colors">Membres</a>
+                <a href="{{ path('app_home') }}#services" class="text-[11px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-colors">Services</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a href="{{ path('app_login') }}" class="text-[11px] font-black uppercase tracking-widest text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors">Connexion</a>
+                <a href="{{ path('app_register') }}" class="btn-premium !py-2 !px-5 !text-[11px]">Nous Rejoindre</a>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endif %}

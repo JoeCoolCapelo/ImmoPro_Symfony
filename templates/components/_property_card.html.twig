@@ -1,0 +1,76 @@
+<div class="premium-card group h-full flex flex-col">
+    <!-- Image Wrapper -->
+    <div class="relative h-64 sm:h-72 overflow-hidden rounded-[1.8rem] m-2">
+        <img src="{{ bien.image ? asset(bien.image) : 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c' }}" 
+             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+             alt="{{ bien.titre }}">
+        
+        <!-- Badges Overlay -->
+        <div class="absolute top-4 left-4 flex flex-col gap-2">
+            <span class="px-3 py-1 bg-white/90 backdrop-blur rounded-full text-[9px] font-black uppercase tracking-widest text-dark border border-white/50 shadow-sm">
+                {{ bien.nature|default('À Vendre') }}
+            </span>
+            {% if bien.statut == 'vendu' %}
+                <span class="px-3 py-1 bg-rose-500/90 backdrop-blur rounded-full text-[9px] font-black uppercase tracking-widest text-white border border-rose-400/50 shadow-sm flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-tag"></i> Acheté
+                </span>
+            {% elseif bien.statut == 'loué' %}
+                <span class="px-3 py-1 bg-indigo-500/90 backdrop-blur rounded-full text-[9px] font-black uppercase tracking-widest text-white border border-indigo-400/50 shadow-sm flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-key"></i> En Location
+                </span>
+            {% elseif bien.statut == 'suspendu' %}
+                <span class="px-3 py-1 bg-amber-500/90 backdrop-blur rounded-full text-[9px] font-black uppercase tracking-widest text-white border border-amber-400/50 shadow-sm flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-eye-slash"></i> Suspendu
+                </span>
+            {% endif %}
+        </div>
+
+        <!-- Views Overlay -->
+        <div class="absolute top-4 right-4">
+            <span class="px-3 py-1 bg-dark/70 backdrop-blur rounded-full text-[9px] font-black uppercase tracking-widest text-white border border-white/10 shadow-sm flex items-center gap-1.5">
+                <i class="fa-regular fa-eye"></i> {{ bien.vues|default(0) }}
+            </span>
+        </div>
+
+        <!-- Price Overlay -->
+        <div class="absolute bottom-4 right-4">
+            <div class="bg-dark/90 backdrop-blur text-white px-5 py-2 rounded-2xl font-black text-lg border border-white/10 shadow-2xl">
+                {{ bien.prix|number_format(0, ',', ' ') }} <small class="text-[10px] uppercase font-bold text-slate-400">GNF</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="p-6 flex-1 flex flex-col">
+        <div class="mb-4">
+            <p class="text-[9px] font-black text-premium uppercase tracking-[0.2em] mb-1">
+                {{ bien.type|default('Propriété') }}
+            </p>
+            <h3 class="text-lg font-black text-dark leading-tight line-clamp-1 group-hover:text-premium transition-colors">
+                {{ bien.titre }}
+            </h3>
+        </div>
+
+        <div class="flex items-center text-slate-400 text-[11px] font-bold mb-6">
+            <i class="fa-solid fa-location-dot mr-2 text-gold"></i>
+            {{ bien.ville }}, {{ bien.quartier }}
+        </div>
+
+        <!-- Features -->
+        <div class="grid grid-cols-3 gap-2 py-4 border-t border-slate-50 mt-auto">
+            <div class="flex flex-col">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Surface</span>
+                <span class="text-xs font-black text-dark">{{ bien.surface }} m²</span>
+            </div>
+            <div class="flex flex-col border-x border-slate-100 px-4">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Pièces</span>
+                <span class="text-xs font-black text-dark">{{ bien.nbPieces }} p.</span>
+            </div>
+            <div class="flex flex-col items-end">
+                <a href="{{ path('biens.show', {id: bien.id}) }}" class="w-10 h-10 bg-slate-50 text-dark rounded-full flex items-center justify-center hover:bg-dark hover:text-white transition-all duration-300">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

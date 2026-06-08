@@ -1,0 +1,57 @@
+{# templates/components/_pagination.html.twig #}
+{# Custom premium pagination template for KnpPaginator #}
+
+{% if pageCount > 1 %}
+<nav class="flex items-center justify-center gap-2" aria-label="Pagination">
+
+    {# ===== BOUTON PRÉCÉDENT ===== #}
+    {% if previous is defined and previous is not null %}
+        <a href="{{ path(route, query|merge({(pageParameterName): previous})) }}" 
+           class="group flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-premium hover:text-white hover:border-premium hover:shadow-lg hover:shadow-premium/20 transition-all duration-300">
+            <i class="fa-solid fa-chevron-left text-[10px] group-hover:-translate-x-0.5 transition-transform"></i>
+            <span class="hidden sm:inline">Précédent</span>
+        </a>
+    {% else %}
+        <span class="flex items-center gap-2 px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-300 cursor-not-allowed">
+            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+            <span class="hidden sm:inline">Précédent</span>
+        </span>
+    {% endif %}
+
+    {# ===== NUMÉROS DE PAGE ===== #}
+    <div class="flex items-center gap-1.5">
+        {% for page in pagesInRange %}
+            {% if page == current %}
+                <span class="w-11 h-11 flex items-center justify-center rounded-xl bg-premium text-white text-xs font-black shadow-lg shadow-premium/30 scale-105">
+                    {{ page }}
+                </span>
+            {% else %}
+                <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" 
+                   class="w-11 h-11 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-xs font-black text-slate-600 hover:bg-premium hover:text-white hover:border-premium hover:shadow-lg hover:shadow-premium/20 hover:scale-105 transition-all duration-300">
+                    {{ page }}
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {# ===== BOUTON SUIVANT ===== #}
+    {% if next is defined and next is not null %}
+        <a href="{{ path(route, query|merge({(pageParameterName): next})) }}" 
+           class="group flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-600 hover:bg-premium hover:text-white hover:border-premium hover:shadow-lg hover:shadow-premium/20 transition-all duration-300">
+            <span class="hidden sm:inline">Suivant</span>
+            <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-0.5 transition-transform"></i>
+        </a>
+    {% else %}
+        <span class="flex items-center gap-2 px-5 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-300 cursor-not-allowed">
+            <span class="hidden sm:inline">Suivant</span>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </span>
+    {% endif %}
+
+</nav>
+
+{# ===== INFO PAGE ===== #}
+<p class="text-center mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
+    Page {{ current }} sur {{ pageCount }}
+</p>
+{% endif %}
