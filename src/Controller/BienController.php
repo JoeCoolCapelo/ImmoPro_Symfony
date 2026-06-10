@@ -256,19 +256,6 @@ class BienController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'biens.destroy', methods: ['POST'])]
-    #[IsGranted('BIEN_DELETE', subject: 'bien')]
-    public function destroy(Request $request, Bien $bien, EntityManagerInterface $em): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$bien->getId(), $request->request->get('_token'))) {
-            $em->remove($bien);
-            $em->flush();
-            $this->addFlash('success', 'Bien supprimé avec succès.');
-        }
-
-        return $this->redirectToRoute('biens.index');
-    }
-
     #[Route('/publier-tout', name: 'biens.publier_tout', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function publierTout(Request $request, BienRepository $bienRepository, EntityManagerInterface $em, UserRepository $userRepository): Response
@@ -299,6 +286,19 @@ class BienController extends AbstractController
         $this->addFlash('success', "$count bien(s) validé(s) et publié(s) avec succès.");
 
         return $this->redirectToRoute('app_dashboard');
+    }
+
+    #[Route('/{id}', name: 'biens.destroy', methods: ['POST'])]
+    #[IsGranted('BIEN_DELETE', subject: 'bien')]
+    public function destroy(Request $request, Bien $bien, EntityManagerInterface $em): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$bien->getId(), $request->request->get('_token'))) {
+            $em->remove($bien);
+            $em->flush();
+            $this->addFlash('success', 'Bien supprimé avec succès.');
+        }
+
+        return $this->redirectToRoute('biens.index');
     }
 
     #[Route('/{id}/publier', name: 'biens.publier', methods: ['POST'])]
