@@ -46,11 +46,16 @@ class BienVoter extends Voter
             return true;
         }
 
+        // L'admin a tous les droits sur les biens
         if ($this->security->isGranted('ROLE_ADMIN')) {
+            return true;
+        }
+
+        // L'agent peut voir et modifier tous les biens
+        if ($this->security->isGranted('ROLE_AGENT')) {
             if (in_array($attribute, [self::VIEW_ANY, self::VIEW, self::UPDATE, self::VALIDATE])) {
                 return true;
             }
-            return false;
         }
 
         switch ($attribute) {
@@ -59,9 +64,8 @@ class BienVoter extends Voter
             case self::VIEW:
                 return $this->canView($subject, $user instanceof User ? $user : null);
             case self::CREATE:
-                // Seuls Admin peuvent créer un bien
                 if (!$user instanceof User) return false;
-                return $this->security->isGranted('ROLE_ADMIN');
+                return $this->security->isGranted('ROLE_AGENT');
             case self::UPDATE:
                 if (!$user instanceof User) return false;
                 return $this->canUpdate($subject, $user);
@@ -69,10 +73,11 @@ class BienVoter extends Voter
                 if (!$user instanceof User) return false;
                 return $this->canDelete($subject, $user);
             case self::VALIDATE:
-                return false; // Only admin (handled above)
+                return false;
         }
 
         return false;
+
     }
 
     private function canView(Bien $bien, ?User $user): bool
