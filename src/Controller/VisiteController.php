@@ -39,10 +39,8 @@ class VisiteController extends AbstractController
         } elseif ($this->isGranted('ROLE_PROPRIETAIRE')) {
             $qb->andWhere('b.owner = :user')
                ->setParameter('user', $user);
-        } elseif ($this->isGranted('ROLE_AGENT')) {
-            $qb->andWhere('b.agent = :user')
-               ->setParameter('user', $user);
         }
+        // Les agents et admins voient TOUTES les visites
 
         // Filtrage par mot-clé (titre ou ville du bien)
         if ($search = $request->query->get('search')) {

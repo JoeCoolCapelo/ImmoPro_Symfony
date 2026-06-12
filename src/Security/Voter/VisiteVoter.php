@@ -43,11 +43,14 @@ class VisiteVoter extends Voter
             return true;
         }
 
+        // L'admin a tous les droits sur les visites
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            if (in_array($attribute, [self::VIEW_ANY, self::VIEW])) {
-                return true;
-            }
-            return false;
+            return true;
+        }
+
+        // L'agent peut tout voir et tout gérer
+        if ($this->security->isGranted('ROLE_AGENT')) {
+            return true;
         }
 
         switch ($attribute) {
