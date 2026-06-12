@@ -12,8 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/expenses')]
-#[IsGranted('ROLE_ADMIN')]
+#[Route('/expenses')]
+#[IsGranted('ROLE_AGENT')]
 class ExpenseController extends AbstractController
 {
     #[Route('/', name: 'expenses.index', methods: ['GET'])]

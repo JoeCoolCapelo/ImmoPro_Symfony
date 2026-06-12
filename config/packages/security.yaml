@@ -42,6 +42,7 @@ security:
         - { path: ^/tasks, roles: ROLE_AGENT }
         - { path: ^/documents, roles: ROLE_AGENT }
         - { path: ^/paiements, roles: ROLE_AGENT }
+        - { path: ^/expenses, roles: ROLE_AGENT }
 
         # Création de transaction réservée aux agents
         - { path: ^/transactions/create, roles: ROLE_AGENT }
