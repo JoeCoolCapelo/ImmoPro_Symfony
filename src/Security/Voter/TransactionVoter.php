@@ -43,12 +43,9 @@ class TransactionVoter extends Voter
             return true;
         }
 
-        // Le Directeur ne gère pas les transactions mais peut les voir
+        // L'admin a tous les droits sur les transactions
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            if (in_array($attribute, [self::VIEW_ANY, self::VIEW])) {
-                return true;
-            }
-            return false;
+            return true;
         }
 
         switch ($attribute) {
